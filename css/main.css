@@ -41,7 +41,7 @@ p.no-top-margin {
 }
 
 .photo {
-    margin-top: 0;
+    float: left
     margin-right: 20px;
     margin-bottom: 10px;
     flex-shrink: 0; /* Prevents the photo from shrinking */
@@ -54,7 +54,7 @@ p.no-top-margin {
 }
 
 .photo img {
-    width: 100%;
+        width: 100%;
     height: auto;
 }
 
