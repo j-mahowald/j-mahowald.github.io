@@ -24,20 +24,20 @@
 }
 
 .container {
-    overflow: hidden; /* Clearfix */
+    overflow: hidden; 
 }
 
 .photo {
     float: left;
-    margin-right: 20px; /* Adjust as needed for space between image and text */
-    margin-bottom: 10px; /* Adjust as needed for space below the image */
+    margin-right: 20px; 
+    margin-bottom: 10px;
 }
 
 .main-content {
-    overflow: hidden; /* Prevents content from wrapping below the floated image */
+    flex-grow: 1;
 }
 
 .photo img {
-    max-width: 100%; /* Ensures the image is responsive */
+    max-width: 100%; 
     height: auto;
 }
