@@ -23,6 +23,10 @@
     opacity: 0.8;
 }
 
+p.no-top-margin {
+  margin-top: 0;
+}
+
 .container {
     display: flex;
     align-items: flex-start; /* Aligns items to the top */
