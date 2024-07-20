@@ -1,10 +1,12 @@
 .social-links {
+    flex-grow: 1;
     display: flex;
     justify-content: left;
     gap: 20px;
 }
 
 .social-links a {
+    flex-grow: 1;
     display: flex;
     align-items: left;
     text-decoration: none;
@@ -13,6 +15,10 @@
 
 .social-links img {
     margin-right: 8px; 
+}
+
+div {
+    margin-bottom: 10px; /* Adjust this value to increase or decrease space between items */
 }
 
 .social-links span {
