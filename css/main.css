@@ -37,7 +37,7 @@ p {
   margin-top: 1rem;
 }
 
-#special-paragraph {
+p.no-top-margin {
   margin-top: 0;
 }
 
