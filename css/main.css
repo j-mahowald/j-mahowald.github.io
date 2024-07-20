@@ -34,6 +34,11 @@
     width: 200px; /* Adjust this value to your preferred photo width */
 }
 
+
+.main-content {
+    margin-top: 0;
+}
+
 .photo img {
     width: 100%;
     height: auto;
