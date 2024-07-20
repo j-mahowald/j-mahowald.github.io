@@ -22,3 +22,23 @@
 .social-links a:hover {
     opacity: 0.8;
 }
+
+.container {
+    display: flex;
+    align-items: flex-start; /* Aligns items to the top */
+    gap: 20px; /* Adds space between the photo and text */
+}
+
+.photo {
+    flex-shrink: 0; /* Prevents the photo from shrinking */
+    width: 200px; /* Adjust this value to your preferred photo width */
+}
+
+.photo img {
+    width: 100%;
+    height: auto;
+}
+
+.main-content {
+    flex-grow: 1; /* Allows the text to take up remaining space */
+}
