@@ -23,8 +23,17 @@
     opacity: 0.8;
 }
 
+p {
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  margin-top: 1rem;
+}
+
 p.no-top-margin {
   margin-top: 0;
+  text-align: left
 }
 
 .container {
