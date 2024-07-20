@@ -1,0 +1,25 @@
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.social-links a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #333; /* Adjust color as needed */
+}
+
+.social-links img {
+    margin-right: 8px; /* Space between icon and text */
+}
+
+.social-links span {
+    font-size: 16px; /* Adjust as needed */
+}
+
+/* Optional hover effect */
+.social-links a:hover {
+    opacity: 0.8;
+}
