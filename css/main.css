@@ -23,41 +23,21 @@
     opacity: 0.8;
 }
 
-p {
-  text-align: justify;
-  hyphens: auto;
-  -webkit-hyphens: auto;
-  -moz-hyphens: auto;
-  margin-top: 1rem;
-}
-
-p.no-top-margin {
-  margin-top: 0;
-  text-align: left
-}
-
 .container {
-    overflow: hidden;
+    overflow: hidden; /* Clearfix */
 }
 
 .photo {
-    float: left
-    margin-right: 20px;
-    margin-bottom: 10px;
-    flex-shrink: 0; /* Prevents the photo from shrinking */
-    width: 200px; /* Adjust this value to your preferred photo width */
+    float: left;
+    margin-right: 20px; /* Adjust as needed for space between image and text */
+    margin-bottom: 10px; /* Adjust as needed for space below the image */
 }
 
-
 .main-content {
-    overflow: hidden;
+    overflow: hidden; /* Prevents content from wrapping below the floated image */
 }
 
 .photo img {
-        width: 100%;
+    max-width: 100%; /* Ensures the image is responsive */
     height: auto;
-}
-
-.main-content {
-    flex-grow: 1; /* Allows the text to take up remaining space */
 }
