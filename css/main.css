@@ -37,20 +37,20 @@ p.no-top-margin {
 }
 
 .container {
-    display: flex;
-    align-items: flex-start; /* Aligns items to the top */
-    gap: 20px; /* Adds space between the photo and text */
+    overflow: hidden;
 }
 
 .photo {
     margin-top: 0;
+    margin-right: 20px;
+    margin-bottom: 10px;
     flex-shrink: 0; /* Prevents the photo from shrinking */
     width: 200px; /* Adjust this value to your preferred photo width */
 }
 
 
 .main-content {
-    margin-top: 0;
+    overflow: hidden;
 }
 
 .photo img {
