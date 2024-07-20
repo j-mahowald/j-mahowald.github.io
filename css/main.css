@@ -30,6 +30,7 @@
 }
 
 .photo {
+    margin-top: 0;
     flex-shrink: 0; /* Prevents the photo from shrinking */
     width: 200px; /* Adjust this value to your preferred photo width */
 }
