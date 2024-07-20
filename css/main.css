@@ -6,20 +6,19 @@
 
 .social-links a {
     display: flex;
-    align-items: center;
+    align-items: left;
     text-decoration: none;
-    color: #333; /* Adjust color as needed */
+    color: #000; 
 }
 
 .social-links img {
-    margin-right: 8px; /* Space between icon and text */
+    margin-right: 8px; 
 }
 
 .social-links span {
-    font-size: 16px; /* Adjust as needed */
+    font-size: 16px; 
 }
 
-/* Optional hover effect */
 .social-links a:hover {
     opacity: 0.8;
 }
