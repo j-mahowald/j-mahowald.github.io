@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog</title>
+    <link rel="stylesheet" id="ns-minimal-google-font-css" href="https://fonts.googleapis.com/css?family=Nunito+Sans%3A300%2C400%2C400i%2C700%2C700i&amp;subset=latin%2Clatin-ext" type="text/css" media="all">
+    <link rel="stylesheet" href="../../css/main.css">
+    <script type="text/javascript" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body class="latex-dark blog-page">
+
+    <header>
+        <p style="text-align: center;"><a href="index.html">← Back to Home</a></p>
+        <h3 style="text-align: center;">Distillation for neural operators</h2>
+    </header>
+
+$$\DeclareMathOperator*{\argmin}{argmin}$$
+
+<p>
+A little over a year ago, I started working on applying <a href="https://github.com/Guang000/Awesome-Dataset-Distillation">dataset distillation</a> to <a href="https://en.wikipedia.org/wiki/Neural_operators">neural operators</a> (or, more accurately, to the data that trains neural operators). The main goal was to reduce the amount of data needed to train a performant network. But a good compression algorithm comes with the perk that you learn lots of interesting things about what the model's paying attention to, in the same way that you learn things about yourself and your priorities when you're cleaning out your apartment.
+</p>
+
+<p>
+The issue was that while distillation really shone in classification settings (a good distilled dataset can nearly solve MNIST by now), it'd been under-applied to regression problems of the kind we see in science, except in certain limited domains where we could recast classification problems into the kernel regression setting to take advantage of interesting properties there. But neural networks view operator learning as a kind of function-to-function regression problem, essentially performing regression from some set of coefficients and functional conditions into the space of functional solutions to a given class of differential equations.
+</p>
+
+<p>
+I thought (and still think) that applying dataset distillation to neural operator data would be a narrow yet worthwhile exercise, not least because it gives us a sense of how scientific data is represented to NNs.
+But this hang-up led me to strip down the problem and study distillation on a few <a href="https://openreview.net/forum?id=bM4MbgGnpx">very simple regression settings</a>, with the intention of returning to the neural operator setting later. Then later came around, so here we are.
+</p>
+
+<header>
+    <h4 style="text-align: center;">Neural operators</h4>
+<p>
+Neural operators, and neural solvers more generally, first need to adapt traditional numerical solvers into a clean input-output structure. To see this in action, we start with the constant-diffusivity form of the time-dynamic, one-dimensional heat equation, complete with a sinusoidal initial condition and Dirichlet boundary conditions: 
+\[
+\begin{cases} 
+\text{PDE: } \frac{\partial u}{\partial t} = \alpha \cdot \frac{\partial^2 u}{\partial x^2} \\
+\\
+\text{IC: } u(x, 0) = \sin(\pi x) \\
+\\
+\text{BCs: } u(0, t) = u(1, t) = 0
+\end{cases}
+\]
+
+<p>The initial and boundary conditions form a "heat cup" on the graph of temperature over time:</p>
+<img src="images/heat_conditions_only.png" alt="Heat cup boundary conditions illustration" style="display: block; margin: 0 auto; max-width: 400px;">
+<p>Using the form of the PDE and a given constant \( \alpha \), the finite difference method is sufficient to fill in the rest of the cup before the frostbite sets in:</p>
+<img src="images/heat.png" alt="Heat cup boundary conditions illustration" style="display: block; margin: 0 auto; max-width: 400px;">
+
+<p>Traditionally, we view the filling-in process –– in this case, the finite-difference method –– as a sequence of discrete linear functions.
+That is, given fixed mesh grains \(dt\) and \(dx\), we put \( r = \alpha \frac{dt}{dx^2} \), and set
+\[ u(x_i, t_{j+1}) = u(x_i, t_j) + r \cdot u(x_{i+1}, t_j) - 2 \cdot u(x_i, t_j) + u(x_{i-1},t_j) \]
+for \( i = 1, ..., n_x-1 \) and \( j = 0, ..., n_t \).
+</p>
+
+<p>To make this palatable for neural networks, we shift the perspective a bit by representing the entire process as a function \(F\) that takes an empty heat cup and fills it up according to a given \(\alpha\). Assume that we're OK (for now) keeping a constant mesh on the domain \( [0,1]^2 \). Then our function should do something like this:</p>
+<img src="images/function.png" alt="Heat cup function illustration" style="display: block; margin: 0 auto; max-width: 400px;">
+We can compare this to the functional representations of other kinds of models:
+<ul style=""list-style-type: none; padding: 0;">
+    <li style="display: flex; align-items: center;">
+        Image-to-tex classification: \(F(\)
+        <img src="images/cat.png" alt="Cat" style="vertical-align: middle; max-width: 40px; margin: 0 4px;">
+        \() = \; \) "cat".
+    </li>
+    <br>
+    <li style="display: flex; align-items: center;">
+        Text-to-text:
+        \(F(\) "Who you got on the '26 CFB championship?"\() = \) "The horns🤘"
+    </li>
+    <br>
+    <li style="display: flex; align-items: center;">
+        Text-to-image: <br> \(F(\) "Abe Lincoln dunking a flaming basketball"\()=\)
+         <img src="images/abe.png" alt="Abe" style="vertical-align: middle; max-width: 40px; margin: 0 4px;">
+    </li>
+</ul>
+I think it bears similarity in form, though not (necessarily) in method, to the process of denoising or filling in an incomplete photo:
+
+<p>Ours is a function-function mapping, which we call an <b>operator</b>.
+Rewriting our conditions as \( u(x, 0) = u_0(x) \), \(\; u(0, t) = u_L(t)\), \(\;\)and \( u(1, t) = u_R(t) \), we can formalize our operator as 
+\[F_{\alpha}(u_0, u_L, u_R) = u(x, t),\]
+where \( F_{\alpha} \) is the operator parameterized by diffusivity \( \alpha \) that maps from the initial and boundary conditions (which in our example are real-valued functions \(\mathbb{R} \to \mathbb{R}\)) to the solution function \( u(x, t) \) (also a real-valued function \(\mathbb{R}^2 \to \mathbb{R}\)). The method by which we find this operator is a growing subfield of machine learning.</p>
+
+<p>There are some important distinctions between our operator and the more consumer-facing kind we're used to. The biggest is that most of these models have a desirable element of creative randomness. Ask your favorite language model to write a poem three times and you'll get three different poems, each uniquely bad. This randomness is mediated in the sampling procedures we apply to the probability distributions derived from the logits, with temperature controlling how peaked or flat those distributions are before sampling. Higher temperatures cause the model to make more exotic word choices, which is a desirable property in some cases. Generative vision models have even more randomness modes –– in diffusion models, we randomly initialize a tensor, randomly add noise, and (often, but not always) randomly remove noise. The result is that asking the same prompt almost never gives the same result.</p>
+
+<p>
+We don't want the same element of creative diversity in scientific modeling. When randomness appears, it's typically either during training (for optimization) or to explicitly model uncertainty and variability in the underlying system, rather than to generate novel creative outputs.
+</p>
+
+<header>
+    <h4 style="text-align: center;">The world's briefest introduction to data distillation</h4>
+<p>
+
+<p>
+Putting aside the operator nonsense for a second, we can define data distillation in its most general sense as an algorithm that optimizes a dataset toward the task of training a performant model. Given a model architecture \( g( \cdot \:; \theta) \) with a loss \( \mathcal{L} \), and a dataset \( X \) of \( n \) samples with labels \( Y \), we're looking for a dataset \((\tilde{X}, \tilde{Y})\) with \( m \) samples, \( m << n \), where
+\[ \tilde{X}^* \in \argmin_\tilde{X} \; \mathcal{L}[ \; g(X; \theta_{\tilde{X}}); Y \;] \quad \text{ s.t. } \quad \theta_{\tilde{X}} \in \argmin_{\theta} \; \mathcal{L}[\; g(\tilde{X}; \theta), \; Y].\]
+</p>
+<p>
+I'm glossing over the fact that, for optimization purposes, the loss \( \mathcal{L} \) is allowed to be slightly different between the two terms, but the motivation is the same. 
+</p>
+<p>
+Barring a closed-form minimizer, the simplest route is to perform both these optimizations through gradient descent. Here, randomly initialize \((\tilde{X}, \tilde{Y})\) on which we train an ephemeral set of weights \(\theta\) for some number of steps. Then we take this "trained" model and evaluate it on real data, obtaining a grade of its performance. Finally, we compute the derivative of this loss <i>with respect to the data</i>, updating the data itself so that in the next loop, it trains a model that achieves better performance when evaluated on the real data. We run this until 
+</p>
+
+
+</p>
+    <footer style="margin-top: 40px;">
+        <p style="text-align: center;">&copy; All rights reserved.</p>
+    </footer>
+</body>
+</html>

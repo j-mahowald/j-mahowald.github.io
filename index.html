@@ -2,82 +2,62 @@
 <html>
     <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://latex.vercel.app/style.css">
+    <link rel="stylesheet" id="ns-minimal-google-font-css" href="https://fonts.googleapis.com/css?family=Nunito+Sans%3A300%2C400%2C400i%2C700%2C700i&amp;subset=latin%2Clatin-ext" type="text/css" media="all">
     <link rel="stylesheet" href="css/main.css">
     </head>
 
     <title>
     Jamie Mahowald
     </title>
-    <h1>Jamie Mahowald</h1>
-    <body
-        class="latex-dark"
-        >
 
-        <div class="container">
+    <body>
+        <h1>Jamie Mahowald</h1>
+
+        <div class="header-container">
             <div class="photo">
-                <img 
-                    src="photos/headshot.jpg" 
+                <img
+                    src="photos/headshot.jpg"
                     alt="photo"
                     width="250">
             </div>
-            <div class="social-links">
-                <a href="https://www.linkedin.com/in/j-mahowald" target="_blank">
-                    <img src="icons/linkedin.png" alt="LinkedIn" width="30" height="30">
-                    <span>LinkedIn</span>
-                </a>
+            <div class="button-navigation">
+                <a href="contact.html" class="nav-button">Contact</a>
+                <a href="blog.html" class="nav-button">Blog</a>
+                <a href="https://drive.google.com/file/d/1g4YXF0TBxNwZaOTAopG4OM3mpsU12-aN/view?usp=sharing" target="_blank" class="nav-button">CV</a>
             </div>
-            <div class="social-links">
-                <a href="https://github.com/j-mahowald" target="_blank">
-                    <img src="icons/github.png" alt="GitHub" width="30" height="30">
-                    <span>GitHub</span>
-                </a>
-            </div>
-            <div class="social-links">
-                <a href="cv.html">
-                    <img src="icons/resume.png" alt="Resume" width="30" height="30">
-                    <span>Resume</span>
-                </a>
-            </div> 
         </div>
         <div class="main-content">
             <p class="no-top-margin">
-                Hi! I'm a post-bachelor student researcher at <a href="https://www.lanl.gov/engage/organizations/analytics-intelligence-technology/a4-advanced-research-cyber-systems">Los Alamos National Laboratory</a>. I recently graduated as a mathematics student in the 
-                <a href="https://liberalarts.utexas.edu/plan2/about-plan-ii/" target="_blank">Plan II</a> honors program 
-                at the University of Texas at Austin. I previously worked at <a href="https://www.arlut.utexas.edu">ARL:UT</a>, the
-                <a href="https://oden.utexas.edu/" target="_blank">Oden Institute</a>, and the Library of Congress's 
+                Hi! I'm a post-bachelor student researcher at <a href="https://www.lanl.gov/engage/organizations/analytics-intelligence-technology/a4-advanced-research-cyber-systems">Los Alamos National Laboratory</a>. I recently graduated as a mathematics student in the
+                <a href="https://liberalarts.utexas.edu/plan2/about-plan-ii/" target="_blank">Plan II</a> honors program
+                at the University of Texas at Austin. Before that, I worked at <a href="https://www.arlut.utexas.edu">ARL:UT</a>, the
+                <a href="https://oden.utexas.edu/" target="_blank">Oden Institute</a>, and the Library of Congress's
                 <a href="https://www.loc.gov/programs/john-w-kluge-center/about-this-program/about-the-kluge-center/" target="_blank">John W. Kluge Center</a>.
-                My research interests include mathematical theory in machine learning, scientific ML, and AI for cultural institutions. 
+                My research interests include mathematical theory in machine learning, ML for scientific computing, and AI for cultural institutions.
                 <br>
-                My email is mahowald dot jamie at gmail dot com.
             </p>
+
+            <section class="publications-section">
+                <h2>Publications</h2>
+                <div class="project-item" onclick="openProject('https://openreview.net/login?redirect=/forum?id%3DbM4MbgGnpx%26referrer%3D%255BAuthor%2520Console%255D%2528%252Fgroup%253Fid%253DICML.cc%252F2025%252FWorkshop%252FES-FoMo-III%252FAuthors%2523your-submissions%2529')">
+                    Toward dataset distillation for regression problems
+                    <div class="project-meta">June 2025 &#183; Jamie Mahowald, Ravi Srinivasan, Atlas Wang &#183; ES-FoMo, ICML</div>
+                </div>
+
+                <div class="project-item" onclick="alert('Paper in review - link not available yet')">
+                    Generalization limits of in-context operator networks for differential equations
+                    <div class="project-meta">December 2024 &#183; Jamie Mahowald, Tan Bui &#183; In review </div>
+                </div>
+
+                <div class="project-item" onclick="openProject('https://ceur-ws.org/Vol-3834/paper17.pdf')">
+                    Integrating visual and textual inputs for searching large-scale map collections with CLIP
+                <div class="project-meta">June 2024 &#183; Jamie Mahowald, Benjamin Lee &#183; CHR</div>
+                </div>
+            </section>
         </div>
 
-        <section id="projects" class="projects-section">
-        <h2>Projects</h2>
-        <div class="project-item" onclick="openProject('https://openreview.net/login?redirect=/forum?id%3DbM4MbgGnpx%26referrer%3D%255BAuthor%2520Console%255D%2528%252Fgroup%253Fid%253DICML.cc%252F2025%252FWorkshop%252FES-FoMo-III%252FAuthors%2523your-submissions%2529')">
-            Toward dataset distillation for regression problems
-            <div class="project-meta">June 2025 &#183; Jamie Mahowald, Ravi Srinivasan, Atlas Wang &#183; ES-FoMo, ICML</div>
-        </div>
-        
-        <div class="project-item" onclick="alert('Paper in review - link not available yet')">
-            Generalization limits of in-context operator networks for differential equations
-            <div class="project-meta">December 2024 &#183; Jamie Mahowald, Tan Bui &#183; In review </div>
-        </div>
-        
-        <div class="project-item" onclick="openProject('https://ceur-ws.org/Vol-3834/paper17.pdf')">
-            Integrating visual and textual inputs for searching large-scale map collections with CLIP
-        <div class="project-meta">June 2024 &#183; Jamie Mahowald, Benjamin Lee &#183; CHR</div>
-        </div>
-        
-    </section>
 
     <script>
-        function openPaper(url) {
-            // Replace with actual URLs to your papers
-            window.open(url, '_blank');
-        }
-
         function openProject(url) {
             window.open(url, '_blank');
         }
