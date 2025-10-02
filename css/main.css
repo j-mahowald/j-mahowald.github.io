@@ -243,20 +243,53 @@ a:focus {
   border-radius: var(--border-radius);
   padding: var(--spacing-md);
   margin-bottom: var(--spacing-md);
-  cursor: pointer;
-  transition: all 0.3s ease;
   position: relative;
+}
+
+.project-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.project-button-group {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+}
+
+.project-btn {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--accent-color);
+  color: #fff;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.project-btn:hover,
+.project-btn:focus {
+  background-color: var(--accent-hover);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.project-btn-desc {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  margin-left: var(--spacing-xs);
 }
 
 .project-item:hover {
   background-color: var(--tertiary-bg);
   border-color: var(--accent-color);
-  transform: translateY(-2px);
   box-shadow: var(--shadow-medium);
-}
-
-.project-item:active {
-  transform: translateY(-1px);
 }
 
 .project-meta {
@@ -406,4 +439,24 @@ footer {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-color);
+}
+
+ul, ol {
+  padding-left: var(--spacing-lg);
+  margin: var(--spacing-sm) 0;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  list-style-type: disc;
+}
+
+ol {
+  list-style-type: decimal;
+}
+
+ul ul, ol ul {
+  list-style-type: circle;
+}
+
+ul ol, ol ol {
+  list-style-type: lower-alpha;
 }

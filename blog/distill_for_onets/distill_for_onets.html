@@ -12,7 +12,9 @@
 
     <header>
         <p style="text-align: center;"><a href="index.html">← Back to Home</a></p>
-        <h3 style="text-align: center;">Distillation for neural operators</h2>
+        <h3 style="text-align: center;">Distillation for neural operators</h3>
+        <h5 style="text-align: center;">Sept. 28, 2025</h5>
+        
     </header>
 
 $$\DeclareMathOperator*{\argmin}{argmin}$$
@@ -53,25 +55,27 @@ Neural operators, and neural solvers more generally, first need to adapt traditi
 That is, given fixed mesh grains \(dt\) and \(dx\), we put \( r = \alpha \frac{dt}{dx^2} \), and set
 \[ u(x_i, t_{j+1}) = u(x_i, t_j) + r \cdot u(x_{i+1}, t_j) - 2 \cdot u(x_i, t_j) + u(x_{i-1},t_j) \]
 for \( i = 1, ..., n_x-1 \) and \( j = 0, ..., n_t \).
+This gives us \( (n_x - 2)(n_t - 1) \) total equations that we run in sequence.
 </p>
+
 
 <p>To make this palatable for neural networks, we shift the perspective a bit by representing the entire process as a function \(F\) that takes an empty heat cup and fills it up according to a given \(\alpha\). Assume that we're OK (for now) keeping a constant mesh on the domain \( [0,1]^2 \). Then our function should do something like this:</p>
 <img src="images/function.png" alt="Heat cup function illustration" style="display: block; margin: 0 auto; max-width: 400px;">
 We can compare this to the functional representations of other kinds of models:
-<ul style=""list-style-type: none; padding: 0;">
-    <li style="display: flex; align-items: center;">
-        Image-to-tex classification: \(F(\)
+<ul>
+    <li>
+        Image-to-text classification: \(F(\)
         <img src="images/cat.png" alt="Cat" style="vertical-align: middle; max-width: 40px; margin: 0 4px;">
         \() = \; \) "cat".
     </li>
     <br>
-    <li style="display: flex; align-items: center;">
+    <li>
         Text-to-text:
-        \(F(\) "Who you got on the '26 CFB championship?"\() = \) "The horns🤘"
+        \(F(\) "Who you got for the '26 CFB championship?"\() = \) "The horns baby 🤘"
     </li>
     <br>
-    <li style="display: flex; align-items: center;">
-        Text-to-image: <br> \(F(\) "Abe Lincoln dunking a flaming basketball"\()=\)
+    <li>
+        Text-to-image: \(F(\) "Abe Lincoln dunking a flaming basketball"\()=\)
          <img src="images/abe.png" alt="Abe" style="vertical-align: middle; max-width: 40px; margin: 0 4px;">
     </li>
 </ul>
@@ -80,7 +84,7 @@ I think it bears similarity in form, though not (necessarily) in method, to the 
 <p>Ours is a function-function mapping, which we call an <b>operator</b>.
 Rewriting our conditions as \( u(x, 0) = u_0(x) \), \(\; u(0, t) = u_L(t)\), \(\;\)and \( u(1, t) = u_R(t) \), we can formalize our operator as 
 \[F_{\alpha}(u_0, u_L, u_R) = u(x, t),\]
-where \( F_{\alpha} \) is the operator parameterized by diffusivity \( \alpha \) that maps from the initial and boundary conditions (which in our example are real-valued functions \(\mathbb{R} \to \mathbb{R}\)) to the solution function \( u(x, t) \) (also a real-valued function \(\mathbb{R}^2 \to \mathbb{R}\)). The method by which we find this operator is a growing subfield of machine learning.</p>
+where \( F_{\alpha} \) is the operator parameterized by diffusivity \( \alpha \) that maps from the initial and boundary conditions (which in our example are real-valued functions \(\mathbb{R} \to \mathbb{R}\)) to the solution function \( u(x, t) \) (also a real-valued function \(\mathbb{R}^2 \to \mathbb{R}\)). The method we use to find this operator is a growing subfield of machine learning.</p>
 
 <p>There are some important distinctions between our operator and the more consumer-facing kind we're used to. The biggest is that most of these models have a desirable element of creative randomness. Ask your favorite language model to write a poem three times and you'll get three different poems, each uniquely bad. This randomness is mediated in the sampling procedures we apply to the probability distributions derived from the logits, with temperature controlling how peaked or flat those distributions are before sampling. Higher temperatures cause the model to make more exotic word choices, which is a desirable property in some cases. Generative vision models have even more randomness modes –– in diffusion models, we randomly initialize a tensor, randomly add noise, and (often, but not always) randomly remove noise. The result is that asking the same prompt almost never gives the same result.</p>
 
@@ -89,20 +93,61 @@ We don't want the same element of creative diversity in scientific modeling. Whe
 </p>
 
 <header>
-    <h4 style="text-align: center;">The world's briefest introduction to data distillation</h4>
-<p>
+<h4 style="text-align: center;">The world's briefest introduction to data distillation</h4>
 
 <p>
-Putting aside the operator nonsense for a second, we can define data distillation in its most general sense as an algorithm that optimizes a dataset toward the task of training a performant model. Given a model architecture \( g( \cdot \:; \theta) \) with a loss \( \mathcal{L} \), and a dataset \( X \) of \( n \) samples with labels \( Y \), we're looking for a dataset \((\tilde{X}, \tilde{Y})\) with \( m \) samples, \( m << n \), where
+Putting aside the operator nonsense for a second, we can define data distillation in its most general sense as an algorithm that optimizes a small dataset toward the task of training a performant model. Given a model architecture \( g( \cdot \:; \theta) \) with a loss \( \mathcal{L} \), and a dataset \( X \) of \( n \) samples with labels \( Y \), we're looking for a dataset \((\tilde{X}, \tilde{Y})\) with \( m \) samples, \( m << n \), where
 \[ \tilde{X}^* \in \argmin_\tilde{X} \; \mathcal{L}[ \; g(X; \theta_{\tilde{X}}); Y \;] \quad \text{ s.t. } \quad \theta_{\tilde{X}} \in \argmin_{\theta} \; \mathcal{L}[\; g(\tilde{X}; \theta), \; Y].\]
 </p>
 <p>
-I'm glossing over the fact that, for optimization purposes, the loss \( \mathcal{L} \) is allowed to be slightly different between the two terms, but the motivation is the same. 
+I'm glossing over the fact that, for optimization purposes, the loss \( \mathcal{L} \) is allowed to be slightly different between the two terms, but the motivation is the same. Also, it's worth underscoring that for the algorithm to make sense, it needs a particular model architecture to optimize toward. There is no "general" distilled dataset that works for any model architecture, though there are some promising directions in that regard.
 </p>
 <p>
-Barring a closed-form minimizer, the simplest route is to perform both these optimizations through gradient descent. Here, randomly initialize \((\tilde{X}, \tilde{Y})\) on which we train an ephemeral set of weights \(\theta\) for some number of steps. Then we take this "trained" model and evaluate it on real data, obtaining a grade of its performance. Finally, we compute the derivative of this loss <i>with respect to the data</i>, updating the data itself so that in the next loop, it trains a model that achieves better performance when evaluated on the real data. We run this until 
+Barring a closed-form minimizer, the simplest route is to perform both these optimizations through gradient descent. Here, randomly initialize \(\tilde{\mathbf{x}} :=(\tilde{X}, \tilde{Y})\) with which we train an ephemeral set of weights \(\theta\) for some number of steps. Then we take this "trained" model and evaluate it on real data, obtaining a grade of its performance. Finally, we compute the derivative of this loss <i>with respect to the data</i>, updating the data itself so that in the next loop, it trains a model that achieves better performance when evaluated on the real data. We run this until "converged", by which we mean that the mini-model trained on the final set of distilled dataset does a somewhat decent job evaluating the real data.
 </p>
 
+<p>
+The process of optimizing the data looks a lot like "filling in" a set of data from its random initialization, which can look like diffusion if you squint hard enough.
+</p>
+
+<p>
+Image classification is definitely the canonical test case for distillation: the <a href="https://www.tongzhouwang.info/dataset_distillation/">original paper</a> operated on MNIST and CIFAR, and most theoretical advances have defaulted to the image classification setting. These make for good visualizations, like this headline visual from <a href="https://arxiv.org/pdf/2203.11932">Cazanavette et al.</a>:
+<br>
+<img src="images/cazanavette_images.png" alt="Cazanavette distilled images" style="display: block; margin: 0 auto; max-width: 600px;">
+</p>
+There's no reason we can't apply the same principles to other kinds of problems, and people have tried to distill 
+<a href="https://arxiv.org/abs/2310.09202">all</a>
+<a href="https://dl.acm.org/doi/10.1145/3604915.3608769">sorts</a> 
+<a href="https://arxiv.org/abs/2104.08448">of</a>
+<a href="https://arxiv.org/abs/2412.00111">data</a>
+<a href="https://arxiv.org/abs/2406.02963">types</a>. I am interested in trying to distill scientific data, which to my knowledge hasn't been done before.
+
+<header>
+<h4 style="text-align: center;">Distilling for regression-like problems</h4>
+<p>In a <a href="https://openreview.net/pdf?id=bM4MbgGnpx">paper</a> we wrote a few months ago, we showed that how fast a distillation algorithm converges (and indeed, whether it converges at all) is mediated by how convex your objective function is. 
+Here, for input-lable pairs \( (X,Y) = \mathbf{x} \), we used 
+\[\mathcal{L} = ||\tilde{\theta} X - Y||^2 + \lambda(||\tilde{X}||_F^2 + ||\tilde{Y}||_F^2), \]
+where \( ||\cdot||_F \) is the Frobenius norm and \( \tilde{\theta} \) represents the mini-model trained by that loop's distilled data \(\tilde{\mathbf{x}} = (\tilde{X}, \tilde{Y}).\) The weird-looking regularization term \( \lambda ||\tilde{X}||_F^2 \) ensures that when we make our gradient descent steps, we're don't tread too far from the ball around the origin where the original data lives.
+</p>
+<p>
+While convergence is guaranteed for a strongly convex objective (whose Hessian is positive-definite), we're're forced to add larger and larger regularization terms when our Hessian starts displaying negative eigenvalues. Cueing from traditional optimization, our regularization term \( \lambda \) must be larger than the absolute value of the most negative eigenvalue \( M \) to guarantee linear convergence that depends on \( \lambda - M \).
+</p>
+<p>
+This is important because operator networks tend to use an \( L^2 \) mean-squared error loss, which can show up in several versions:
+<ul>
+    <li>
+        Supervised samples:
+        \(\; \mathcal{L} = ||u_{\text{pred}}(x,t) - u_{\text{true}}(x,t)||^2 \) (divide by \( ||u_{\text{true}}(x,t)||^2 \) for relative error).
+    </li>
+    <li>
+        Physics-informed (PDE residual):
+        \(\; \mathcal{L} = ||\frac{\partial u}{\partial t} - \alpha \frac{\partial^2 u}{\partial x^2}  ||^2 \)
+    </li>
+    <li>
+        \( H^1 \) norm:
+        \(\; \mathcal{L} = ||u_{\text{pred}} - u_{\text{true}}||^2 + ||\nabla u_{\text{pred}} - \nabla u_{\text{true}}||^2 \) (accounts for smoothness and energy constraints).
+    </li>
+</ul>
 
 </p>
     <footer style="margin-top: 40px;">
