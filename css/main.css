@@ -81,7 +81,7 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('/Users/jamiemahowald/Documents/GitHub/j-mahowald.github.io/grande.jpg');
+  background-image: url('grande.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
