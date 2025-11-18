@@ -71,6 +71,65 @@ body {
   color: var(--text-primary);
   background-color: var(--primary-bg);
   transition: background-color 0.3s ease, color 0.3s ease;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/Users/jamiemahowald/Documents/GitHub/j-mahowald.github.io/grande.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.page-home::before {
+  opacity: 0.70;
+}
+
+.page-blog::before {
+  opacity: 0.20;
+}
+
+.page-contact::before {
+  opacity: 0.10;
+}
+
+.content-wrapper {
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-medium);
+  max-width: 120ch; /* Override just for the wrapper */
+  margin: 500 auto;
+}
+
+/* Different opacities per page */
+.page-home .content-wrapper {
+  background-color: rgba(255, 255, 255, 0.60);
+}
+
+.page-blog .content-wrapper {
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+.page-contact .content-wrapper {
+  background-color: rgba(255, 255, 255, 0.98);
+}
+
+/* Dark mode variants */
+.dark.page-home .content-wrapper {
+  background-color: rgba(26, 26, 26, 0.95);
+}
+
+.dark.page-blog .content-wrapper {
+  background-color: rgba(26, 26, 26, 0.85);
 }
 
 h1 {
@@ -459,4 +518,40 @@ ul ul, ol ul {
 
 ul ol, ol ol {
   list-style-type: lower-alpha;
+}
+
+/* Blog Post Styles */
+.blog-post-item {
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  position: relative;
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.blog-post-item:hover {
+  background-color: var(--tertiary-bg);
+  border-color: var(--accent-color);
+  box-shadow: var(--shadow-medium);
+  text-decoration: none;
+}
+
+.blog-post-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.blog-post-date {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
+  font-style: italic;
 }
