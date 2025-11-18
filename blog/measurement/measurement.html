@@ -36,9 +36,9 @@
 
 <h3>Inner products, norms, and metrics</h3>
     <p>Most spaces that we work with in ML have an implicitly or explicitly defined <i>positive-definite symmetric bilinear form</i> \(g(\cdot, \cdot)\), better known as an <b>inner product</b>, which accepts two inputs and measures their "alignment," in some sense, in the real numbers. Even though it has the same functional form \(g: S \times S \to \mathbb{R}\) as a metric, the inner product has key differences: it need not be symmetric or non-negative. In Euclidean space, the familiar dot product \(g(\mathbf{x},\mathbf{y}) = \langle \mathbf{x}, \mathbf{y} \rangle = \mathbf{x} \cdot \mathbf{y} = x_1 y_1 + \ldots + x_n y_n\) plays this role. The "alignment" interpretation here is clear: vectors pointing in the same or opposite directions have very positive or very negative inner products, respectively, while orthogonal vectors evaluate to 0. 
-    <iframe src="blog/measurement/vis/dp.html" width="650" height="675" style="border: none;"></iframe>
+    <iframe src="vis/dp.html" width="650" height="675" style="border: none;"></iframe>
     This works in other spaces, too: for functions \(f\) and \(h\) defined in the space of functions on a given domain \(D\), the inner product is defined as \(g(f, h) = \int_D f(x) h(x)\, dx.\)</p>
-    <iframe src="blog/measurement/vis/function_inner_product.html" width="650" height="630" style="border: none;"></iframe>
+    <iframe src="vis/function_inner_product.html" width="650" height="630" style="border: none;"></iframe>
     As with vectors, the functions are perfectly aligned when they're identical, perfectly disaligned when they're negatives of one another, and orthogonal in the middle.
 
     <p>From a given inner product, we define the <b>norm</b> \(\| v \| = \sqrt{g(v, v)}\). This is what we construct when we say an inner product "induces" a norm. The norm is always well defined since the inner product between a vector and itself is always nonnegative: regardless of whether \(x_i\) is positive or negative, \(x_i x_i = x_i^2\) will always be nonnegative, so we can take the \(\sqrt{\cdot}\) operation without fear. In other spaces, the inner product will be defined so that this is satisfied.</p>
@@ -108,7 +108,7 @@
 
     <h3>Example: sinusoid fitting</h3>
     <p>Consider the function \(f(x; A, \omega) = A \sin(\omega x)\). If we treat \(A\) and \(\omega\) as parameters to optimize to some target, we can visualize these three spaces: the (coincidental) data and function space, the parameter space, and the tangent space. 
-    <IMG SRC="blog/measurement/vis/sinusoid_optimization_amplitude.gif" WIDTH=670>
+    <IMG SRC="vis/sinusoid_optimization_amplitude.gif" WIDTH=670>
     <p>Notice that fitting training points to their targets in the data space highly resembles fitting the function to the target function in the function space. This causes the loss \(L = \frac{1}{N} \sum_i (y_i - f(x_i; A, \omega))^2\), a discretized version of the \(L^2\) metric in function space, to behave similarly to the Euclidean distance metric.</p>
     <p>Furthermore, we can exactly compute the tangent vectors of this simple function: \(\frac{\partial f}{\partial A} = \sin(\omega x)\) and \(\frac{\partial f}{\partial \omega} = A x \cos(\omega x)\). Suppose, for instance, there exist ground truth parameters (\(A^*\), \(\omega^*\)) defining the target function. Then, for a given guess of parameters \((A, \omega)\), an infinitesimal step \((\delta A, \delta \omega)\) in parameter space corresponds to a step in function space 
         \[\delta f(x) = \frac{\partial f}{\partial A} \delta A + \frac{\partial f}{\partial \omega} \delta \omega = \sin(\omega x) \delta A + Ax \cos (\omega x) \delta \omega, \]
@@ -142,12 +142,12 @@
         <li>The most common attack uses the \(L_{\infty}\) norm, where \(||x-x'||_{\infty} = \max_i |x_i - x'_i| \leq \varepsilon\) means that each pixel can be perturbed by at most \(\varepsilon\). This takes advantage of the fact that a human probably won't notice a small change in any single pixel. 
 
         <p>In 2014, <b><a href="https://arxiv.org/abs/1412.6572">Goodfellow et al.</a></b> introduced the Fast Gradient Sign Method (FGSM), which creates adversarial examples that maximizes a classification model's loss (and therefore its misclassification probability). Given an input \(x\) with a true output \(y\), they calculate the gradient of the loss <i>with respect to the input</i> \(\nabla_x L(\theta, x, y)\) and create an adversarial sample using \(x' \gets x + \varepsilon \cdot \text{sign}(\nabla_x L(\theta, x, y))\). This method effectively perturbs each pixel in the direction that increases the loss the most, while keeping the perturbation within the \(L_{\infty}\) norm constraint.
-        <IMG SRC="blog/measurement/vis/fgsm.png" WIDTH=600>
+        <IMG SRC="vis/fgsm.png" WIDTH=600>
         </p></li>
         <li>Using the \(L^2\) norm \(||x-x'||_2 = \sqrt{\sum_i (x_i - x'_i)^2} \leq \varepsilon\) allows for larger perturbations in some pixels, as long as the overall energy of the perturbation remains below a certain threshold, resulting in more localized changes. 
 
         <p> The <b><a href="https://arxiv.org/abs/1608.04644">Carlini-Wagner</a></b> method generates adversarial samples in the data space \(\mathbb{R}^n\)by solving the optimization problem given by \(\min ||x - x'||_2 + c f(x')\) such that \(x' \in [0,1]^n\), where \(f\) is one of many functions that encourages misclassification. For instance, given an adversarial target class \(t\), the function \(f(x') = \text{softplus} (\max \{Z(x')_i: i \neq t\} - Z(x')_t) - \ln(2)\) encourages \(x'\) to be classified as class \(t\). 
-        <IMG SRC="blog/measurement/vis/cw.png" WIDTH=600>
+        <IMG SRC="vis/cw.png" WIDTH=600>
 
         </p>
         <li>Using the \(L^1\) norm \(||x-x'||_1 = \sum_i |x_i - x'_i| \leq \varepsilon\) encourages sparse perturbations, meaning that only a few pixels are changed significantly while others remain untouched.</li>
