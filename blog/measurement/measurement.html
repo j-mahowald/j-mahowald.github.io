@@ -11,7 +11,7 @@
 <body class="page-blog">
 <div class="content-wrapper">
     <header>
-        <p style="text-align: center;"><a href="index.html">← Back to Home</a></p>
+        <p style="text-align: center;"><a href="blog.html">← Back to Blogs</a></p>
         <h3 style="text-align: center;">Measuring things in machine learning</h3>
         <h5 style="text-align: center;">Nov. 9, 2025</h5>
     </header>
@@ -20,11 +20,11 @@
 
     <p>The adage says, "what gets measured gets done." Here, I aim to give an overview of how mathematicians study measurement rigorously, and how machine-learning research can use the rigor of the mathematical measure to its advantage.</p>
 
-    <p>As a refresher, there are two separate &ndash; yet highly related and annoyingly conflatable &ndash; concepts to keep track of here: a <em>(distance) metric</em> and a <em>measure</em>. I'll start with the metric and get into the measure later.</p>
+    <p>There are two separate &ndash; yet highly related and annoyingly conflatable &ndash; concepts to keep track of here: a <em>(distance) metric</em> and a <em>measure</em>. I'll start with some mathematical preliminaries, discuss the metric and some of its applications, then conclude with the more theoretical measure.</p>
     <h2>The metric</h2>
 
     <h3>Definitions</h3>
-    <p>A <em>metric</em> on a set \(S\) gives a sense of <em>distance between two points in a set</em>. It is a function \(d: S \times S \to \mathbb{R}\) that follows three rules:</p>
+    <p>As a refresher, <em>metric</em> on a set \(S\) gives a sense of <em>distance between two points in a set</em>. It is a function \(d: S \times S \to \mathbb{R}\) that follows three rules:</p>
 
     <ul>
         <li><strong>Non-negativity</strong>: \(d(x,y) \geq 0\) for any pair of \(x\) and \(y\) in \(S\). The only way we can have \(d(x,y)=0\) is if \(x=y\). Any two points that are not identical have some distance between them.</li>
@@ -110,7 +110,7 @@
     <p>Consider the function \(f(x; A, \omega) = A \sin(\omega x)\). If we treat \(A\) and \(\omega\) as parameters to optimize to some target, we can visualize these three spaces: the (coincidental) data and function space, the parameter space, and the tangent space. 
     <IMG SRC="vis/sinusoid_optimization_amplitude.gif" WIDTH=670>
     <p>Notice that fitting training points to their targets in the data space highly resembles fitting the function to the target function in the function space. This causes the loss \(L = \frac{1}{N} \sum_i (y_i - f(x_i; A, \omega))^2\), a discretized version of the \(L^2\) metric in function space, to behave similarly to the Euclidean distance metric.</p>
-    <p>Furthermore, we can exactly compute the tangent vectors of this simple function: \(\frac{\partial f}{\partial A} = \sin(\omega x)\) and \(\frac{\partial f}{\partial \omega} = A x \cos(\omega x)\). Suppose, for instance, there exist ground truth parameters (\(A^*\), \(\omega^*\)) defining the target function. Then, for a given guess of parameters \((A, \omega)\), an infinitesimal step \((\delta A, \delta \omega)\) in parameter space corresponds to a step in function space 
+    <p>Furthermore, we can exactly compute the tangent vectors of this simple function: \(\frac{\partial f}{\partial A} = \sin(\omega x)\) and \(\frac{\partial f}{\partial \omega} = A x \cos(\omega x)\). Suppose, for instance, there exist ground truth parameters (\(A^*\), \(\omega^*\)) defining the target function. Then, for a given guess of parameters \((A, \omega)\), an infinitesimal step \((\delta A, \delta \omega)\) in parameter space corresponds to a step in function space:
         \[\delta f(x) = \frac{\partial f}{\partial A} \delta A + \frac{\partial f}{\partial \omega} \delta \omega = \sin(\omega x) \delta A + Ax \cos (\omega x) \delta \omega, \]
     which has \(L^2\) size
         \[

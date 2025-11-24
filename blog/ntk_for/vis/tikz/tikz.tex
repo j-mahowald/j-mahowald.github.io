@@ -1,0 +1,16 @@
+\documentclass[tikz,border=3mm]{standalone}
+\usetikzlibrary{positioning,arrows.meta,quotes,decorations.pathmorphing, calc}
+
+\begin{document}
+\begin{tikzpicture}[scale=1.0]
+\node (Theta) at (0,0) {$\Theta$};
+\node (F) [right=1cm of Theta] {$\mathcal{F}$};
+\node (TTheta) [left=1cm of F, yshift=0.85cm, blue] {$\mathcal{T}_{\theta} \Theta$};
+\node (TF) [above=1.25cm of F] {$\mathcal{T}_{f_{\theta}} \mathcal{F}$};
+\draw[->] (Theta) to node[below] {$\Phi$} (F);
+\draw[->, blue] (TTheta) to node[above=0.00cm, xshift=-0.2cm] {$d_{\theta} \Phi$} (TF);
+\draw[->, blue] (Theta) to node[left, blue] [yshift=-0.1cm] {$\delta \theta$} (TTheta);
+\draw[->] (F) to node[left] {${\color{blue}{\ni}} \; \partial_{\theta} f_{\theta}$} (TF);
+\end{tikzpicture}
+
+\end{document}

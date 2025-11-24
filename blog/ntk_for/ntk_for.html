@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog</title>
+    <link rel="stylesheet" id="ns-minimal-google-font-css" href="https://fonts.googleapis.com/css?family=Nunito+Sans%3A300%2C400%2C400i%2C700%2C700i&amp;subset=latin%2Clatin-ext" type="text/css" media="all">
+    <link rel="stylesheet" href="../../css/main.css">
+    <script>
+    MathJax = {
+      tex: {
+        tags: 'ams',
+        packages: {'[+]': ['ams']}
+      }
+    };
+    </script>
+    <script type="text/javascript" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://tikzjax.com/v1/fonts.css">
+    <script src="https://tikzjax.com/v1/tikzjax.js"></script>
+</head>
+<body class="page-blog">
+<div class="content-wrapper">
+    <header>
+        <p style="text-align: center;"><a href="blog.html">← Back to Blogs</a></p>
+        <h3 style="text-align: center;">What is the neural tangent kernel for?</h3>
+        <h5 style="text-align: center;">Date</h5>
+    </header>
+
+<article>
+
+$$\DeclareMathOperator*{\out}{\text{out}}$$
+$$\DeclareMathOperator{\R}{\mathbb{R}}$$
+$$\DeclareMathOperator{\T}{\mathcal{T}}$$
+$$\DeclareMathOperator{\F}{\mathcal{F}}$$
+$$\DeclareMathOperator{\ev}{\text{ev}}$$
+
+<p>
+Lilian Weng has an <a href="https://lilianweng.github.io/posts/2022-09-08-ntk/">excellent explanation </a> of the math of the NTK, which is probably a more useful read to most people than the original paper is. I'd highly recommend it for an in-depth rigorous introduction. Here, I want to focus on the intuition for <i>why</i> we care about the NTK in the first place, what interesting geometric properties it follows, and what useful results it could get us.
+</p>
+
+<p>The NTK is essentially motivated by the fact that NNs, especially in their training dynamics, are highly nonlinear and difficult to analyze. By "difficult to analyze," we mean that we can't use existing analytical techniques to mathematically guarantee desirable properties about it, like that it will converge to a good minimum or generalize well to unseen data. It's really nice when numerical methods have these end-to-end guarantees, since we can prove that certain restrictions on our inputs will achieve some required degree of accuracy in our outputs. By and large we can't do this with NNs.</p>
+<p>We <i>can</i>, however, use these techniques on an earlier, simpler class of models called <b>kernel machines</b>, which have been periodically studied since the 1960s. The NTK aims to <i>cast NNs as kernel machines</i> under certain assumptions and analyze them in this regime. It falls under a broad category of <i>making something we don't understand look like something we do understand,</i> a class whose other members include mean fields approximations and NNs as dynamical systems.</p>
+
+<h2>Setup & basic mathematics</h2>
+    
+<h3>Dimensionality</h3>    
+<p>We begin with a parameterized neural network \(f_{\theta}:  X \to Y\), where \(X=\R^{n_{\text{in}}}\), \(Y=\R^{n_{\out}},\) and the network's parameters \(\theta\) live in a parameter space \(\Theta\), often \(\R^P\).</p>
+<p>The \(P\) figure represents a "flattening" of all the weights and biases in the network, and is usually quite large. Suppose we start with an input vector \(x = A^{(0)}(x)\) of dimension \(n_{\text{in}} = n_0\). To get from layer \(\ell\) (with width \(n_{\ell}\)) to the next layer \(\ell+1\) (with width \(n_{\ell+1}\)) involves the operation
+\[ A^{(\ell + 1)}(x) = \sigma(W^{(\ell)} A^{(\ell)}(x) + b^{(\ell)}), \]
+where \(\sigma(\cdot)\) is a nonlinear activation function like ReLU or tanh, and \(W^{(\ell)}\) and \(b^{(\ell)}\) are the weights and biases at layer \(\ell\). In order to get the vector \(A^{(\ell)}(x)\) from dimension \(n_{\ell}\) to dimension \(n_{\ell+1}\), the dimension of the weight matrix \(W^{(\ell)}\) must be \(n_{\ell} \times n_{\ell+1}\). Now, the bias vector \(b^{(\ell)}\) has dimension \(n_{\ell+1}\), so that the whole quantity \(W^{(\ell)} A^{(\ell)}(x) + b^{(\ell)}\) is itself a matrix of shape \((n_\ell+1) \cdot n_{\ell+1}\). 
+The final output of the network is \(f_{\theta}(x) = A^{(L)}(x)\), where \(L\) is the number of layers, and the quantity \(P\) –– the total number of parameters we need to learn –– is the sum \(\sum_{\ell=0}^{L-1} (n_\ell + 1) \cdot n_{\ell+1} =: P\). We therefore say that \(\Theta\), the space where the flattened parameters live, is \(\R^P\).</p>
+
+<h4>The Jacobian</h4>
+<p>
+The <b>Jacobian</b> is the matrix computed by taking the derivative of a vector-valued function with respect to each element of its input. For our function \(f_{\theta}\), with \(\theta\) in \(\R^P\), and an input vector \(x \in \R^{n_{\text{in}}}\), the Jacobian <i>with respect to the parameters</i> is given by 
+\begin{equation} 
+J_{\theta}(x) = \frac{\partial f_{\theta}(x)}{\partial \theta} =
+\begin{bmatrix}
+\frac{\partial f_1}{\partial \theta_1} & \frac{\partial f_1}{\partial \theta_2} & \cdots & \frac{\partial f_1}{\partial \theta_P} \\
+\frac{\partial f_2}{\partial \theta_1} & \frac{\partial f_2}{\partial \theta_2} & \cdots & \frac{\partial f_2}{\partial \theta_P} \\
+\vdots & \vdots & \ddots & \vdots \\
+\frac{\partial f_{n_{\out}}}{\partial \theta_1} & \frac{\partial f_{n_{\out}}}{\partial \theta_2} & \cdots & \frac{\partial f_{n_{\out}}}{\partial \theta_P}
+\end{bmatrix}
+\in \mathbb{R}^{n_{\out} \times P}.
+\label{eqn:jacboian}
+\end{equation}
+As in Weng's post, the gradient vector \(\nabla_{\theta} f_{\theta}(x)\) is the transpose of this Jacobian and has shape \(P \times n_{\out}\).</p>
+</p>
+
+<h3>Kernels</h3>
+<p>In the scalar-valued case \(Y = \R\), a positive-definite <b>kernel</b> on a set \(X\) is a function \(k: X \times X \to \R\) that is
+<ul>
+    <li> symmetric: \(k(x, x') = k(x', x)\) for all \(x, x' \in X\), and</li>
+    <li> positive semi-definite: for any \(x_i\) and \(x_j\) in \(X\), \(n\) in \(\mathbb{N}\), and real numbers \(r_1, \ldots, r_n \in \R\), we have \(\sum_{i=1}^m \sum_{j=1}^m r_i k(x_i, x_j) r_j \geq 0\).</li>
+</ul>
+In the scalar-valued case, we can use the familiar dot product for most of the following operations. We're normally not in the business of defining special-use kernels from scratch: usually, we use well-known kernels like the Gaussian kernel or polynomial kernel, or we will define a function specifically to satisfy these properties.</p>
+<p>
+Kernels are often used to measure similarity between two inputs \(x\) and \(x'\). The radial basis function (RBF) kernel, given by \(k(x, x') = \exp(-\|x - x'\|^2 / (2 \sigma^2))\) for some bandwidth parameter \(\sigma\), is a common example in machine learning: it outputs values close to 1 when \(x\) and \(x'\) are close together, and values close to 0 when they are far apart.
+</p>
+
+<h4>Hilbert spaces</h4>
+
+<p>
+Kernels can often be decomposed into the inner product of a <b>feature map</b> \(\phi: X \to \mathcal{H}\) to itself, where \(\mathcal{H}\) is a (possibly infinite-dimensional) Hilbert space. <a href="https://dornsife.usc.edu/sergey-lototsky/wp-content/uploads/sites/211/2023/06/MercerAndMore.pdf">Mercer's theorem</a> guarantees that such a map exists if \(k\) is continuous and positive-definite. In this case, we have \(k(x, x') = \langle \phi(x), \phi(x') \rangle_{\mathcal{H}}\), where \(\langle \cdot, \cdot \rangle_{\mathcal{H}}\) is the inner product in \(\mathcal{H}\). 
+</p>
+
+<p>The study of Hilbert spaces is especially important because the inner product of a well-defined Hilbert space is itself a positive-definite kernel. Furthermore, if \(\mathcal{H}\) is the Hilbert space of functions from \(X\) to \(Y\), and the point-evaluation functional \(L_x: \mathcal{H} \to Y\) such that \(L_x(f) = f(x)\) is continuous for all \(x \in X\), then \(H\) is a <b>reproducing kernel Hilbert space</b> (RKHS), and there exists a kernel \(k(x, x')\) on \(X\) whose partial application \(k(x, \cdot)\) satisfies
+    \begin{equation}\langle f(\cdot), k(x, \cdot) \rangle = f(x) \text{ for all } f \in \mathcal{H}. \label{eqn:reproducing}\end{equation}</p>
+
+<p>
+Just as an RKHS implies the existence a reproducing kernel, we can go the other way, too: a kernel \(k(\cdot, \cdot)\) that satisfies the properties above defines a unique RKHS by the <a href="https://pages.stat.wisc.edu/~wahba/stat860public/pdf2/aronszajn.pdf">Moore-Aronszajn theorem</a>.
+</p>
+
+<h4>Example: Finite Fourier kernel</h4>
+<p>
+As an example, let's look at the finite Fourier kernel,
+\[k(x, x') = \sum_{k=1}^N \cos(k(x-x')),\] 
+defined on \(\R^d \times \R^d\) for some finite \(N\). This kernel has the explicit feature map 
+\[ \phi(x) = (\cos(x), \cos(2x), \ldots, \cos(Nx), \sin(x), \sin(2x), \ldots, \sin(Nx)), \]
+so that, by the \(\cos(x-y)\) identity,
+\[\langle \phi(x), \phi(x') \rangle = \sum_{k=1}^N [\cos(nx)\cos(nx') + \sin(nx)\sin(nx')] = \sum_{k=1}^N \cos(k(x-x')) = k(x,x').\]
+</p>
+<p>
+Let \(\mathcal{H}\) be the linear span of the set \(\{k(x, \cdot) : x \in \R^n\}\) –– that is, all finite linear combinations of the form \(f(\cdot) = \sum_{i=1}^n \alpha_i k(x_i, \cdot)\) for some \(n\), coefficients \(\alpha_i\), and points \(x_i\). 
+For any two functions \(f_a =\sum_{i=1}^n a_i k(x_i, \cdot)\) and \(f_b = \sum_{i=1}^n b_i k(x_i, \cdot)\), we need to define the inner product \(\langle \cdot, \cdot \rangle_{\mathcal{H}}\) on \(\mathcal{H}\) as
+\[ \left\langle f_a, f_b \right\rangle_{\mathcal{H}} = \sum_{i=1}^n  \sum_{j=1}^m a_i b_j \left\langle k(x_i, \cdot), k(x_j, \cdot) \right\rangle_{\mathcal{H}} \]
+to satisfy the equality 
+\begin{equation}\langle k(x_i, x), k(x_j, x) \rangle_{\mathcal{H}} = k(x_i, x_j).\label{eqn:kernel-equality}\end{equation}
+In this case, the dot product \(\langle a,b \rangle_{\mathcal{H_0}} = a \cdot b\) works just fine:
+\[
+\begin{aligned}
+\langle k(x_i, y), k(x_j, y) \rangle_{\mathcal{H}}
+&=\Big\langle \sum_{n=1}^N \big[\cos(n x_i)\cos(ny) + \sin(n x_i)\sin(ny)\big],\\
+&\qquad \sum_{m=1}^N \big[\cos(m x_j)\cos(my) + \sin(m x_j)\sin(my)\big] \Big\rangle \\
+&= \sum_{n=1}^N \sum_{m=1}^N \Big[ \cos(n x_i)\cos(m x_j)(\cos(ny) \cdot \cos(my)) \\
+&\qquad\qquad\;\, + \sin(n x_i)\sin(m x_j)(\sin(ny) \cdot \sin(my)) \Big]. \\
+&=\sum_{n=1}^N \Big[ \cos(n x_i)\cos(n x_j) + \sin(n x_i)\sin(n x_j) \Big] \\
+&=\sum_{n=1}^N \cos\big(n(x_i - x_j)\big) = k(x_i, x_j),
+\end{aligned}
+\]
+where the third step follows by the orthogonality of sine and cosine, so that only the terms with \(n=m\) are nonzero. 
+</p>
+<p>
+Since \(\{\sin(x), \cos(x)\}\) is a basis for \(\mathcal{H}\), any function in \(\mathcal{H}\) can be written as \(f(x)=\sum_{i=1}^\infty a_i k(x_i, x)\), a linear combination of these basis functions (indeed this is true for any kernel). Checking our claimed property –– that functions are reproduced by the inner product with the kernel –– we have
+\[\begin{align*}
+\langle f(y), k(x, y) \rangle_{\mathcal{H}} &= \left\langle \sum_i \alpha_i k(x_i, y), k(x, y) \right\rangle_{\mathcal{H}}\\
+&= \sum_i \alpha_i \langle k(x_i, y), k(x, y) \rangle_{\mathcal{H}}\\
+&= \sum_i \alpha_i k(x_i, x)\\
+&= f(x).
+\end{align*}\]
+</p>
+<p>
+Thus the "reproducing" property given by (\ref{eqn:reproducing}) is satisfied, and \(\mathcal{H}\) is indeed an RKHS with reproducing kernel \(k(\cdot, \cdot)\).</p>
+<p> This example is, admittedly, somewhat contrived: the explicit form we supplied here works only when the kernel has an explicit feature decomposition \(k(x, x') = \langle \phi(x), \phi(x') \rangle_{\mathcal{H}}\), which supplies a finite-dimensional \(\mathcal{H}\). For other valid kernels, like the RBF kernel, the corresponding RKHS is infinite-dimensional, and we need to guarantee property (\ref{eqn:kernel-equality}) by definition, rather than construction.
+</p>
+
+<h3>Matrix-valued kernels</h3>
+When \(f: X \to Y\) is vector-valued with \(Y = \R^{n_{\out}}\), the kernel \(k(\cdot, \cdot)\) is matrix-valued: \(k: X \times X \to \R^{n_{\out} \times n_{\out}}\). The properties of symmetry and positive-definiteness still hold, but are defined in terms of matrix operations. Symmetry means that \(k(x, x') = k(x', x)^\top\) for all \(x, x' \in X\), and positive-definiteness means that for any \(x_i\) and \(x_j\) in \(X\), \(n\) in \(\mathbb{N}\), and vectors \(r_1, \ldots, r_n \in \R^{n_{\out}}\), we have \(\sum_{i=1}^m \sum_{j=1}^m r_i^\top k(x_i, x_j) r_j \geq 0\).</p>
+
+<h3>Kernel machines</h3>
+
+<p>A <b>kernel machine</b> is a type of learning algorithm that doesn't have paramters. Instead, for labeled dataset \(X,Y = (x_1, y_1), (x_2, y_2), \ldots, (x_n, y_n)\) and a given kernel \(k(\cdot, \cdot)\), the prediction on a new input \(x_T\) is given by \(f(x_T) = \sum_{i=1}^n k(x_T, x_i) \cdot y_i\). Kernel machines like the <a href="https://www.ibm.com/think/topics/support-vector-machine">support vector machine</a> built on traditional kernels are useful for linearizing many nonlinear problems, but they're limited to memorizing data in a much more explicit way than NNs are. </p>
+
+<h2>The neural tangent kernel</h2>
+The neural tangent kernel itself is a deceptively simple object. Given a parameterized network \(f_{\theta}\), the NTK at parameters \(\theta\) is defined as
+\[K(x, x') = \langle \nabla_{\theta} f_{\theta}(x), \nabla_{\theta} f_{\theta}(x') \rangle.\]
+In Euclidean space, the dimension of the NTK depends on the dimensions of the parameters and the output. If the output dimension is 1 (i.e., \(f_\theta\) is a scalar-valued function), then \(\nabla_\theta f(x)\) is a vector of size \(P\), and the NTK is just a real number given by \[\sum_{p=1}^P \frac{\partial f_{\theta}(x)}{\partial \theta_p} \frac{\partial f_{\theta}(x')}{\partial \theta_p}.\] If the output dimension is \(n_{\out}>1\), then \(\nabla_\theta f_\theta\) is a matrix of shape \(P \times n_{\out}\), and the NTK is an \(n_{\out} \times n_{\out}\) matrix whose (\(i,j\)) entry is given by \[K_{ij} = \sum_{p=1}^P \frac{\partial f_{\theta_i}(x)}{\partial \theta_p} \frac{\partial f_{\theta_j}(x')}{\partial \theta_p}.\]</p>
+<p>This means that, in Euclidean space, the inner product is literally the dot product for scalar-valued functions, while for vector-valued functions, the the NTK's entries are given by the dot product of the corresponding rows of \(\nabla_\theta f_\theta(x)\) and \(\nabla_\theta f_\theta(x')^\top\):</p>
+<IMG SRC="/Users/jamiemahowald/Documents/GitHub/j-mahowald.github.io/blog/ntk_for/vis/ntk.png" WIDTH=650 ALT="NTK formula">
+
+<h3>Where does the NTK show up?</h3>
+<p>
+One reason the NTK is interesting is that it naturally "falls out" of some important scenarios. Consider the view of NN training as a differential equation in time, where, as a stand-in for discrete training steps, we track how the network \(f_{\theta}(x)\) changes continuously as a function of time \(t\) using the derivative \(\frac{d f_{\theta}(x)}{dt}\). We can also track how the parameters \(\theta\) change as a function of time using \(\frac{d \theta}{dt}\).
+</p>
+<p>To paraphrase Weng, consider an empirical loss function of our parameters \(\mathcal{L}: \R^P \to \R_{\geq 0}\) as the average of a per-sample loss function \(\ell: \R^{n_\out} \times \R^{n_\out} \to \R_{\geq 0}\), where
+\[ \mathcal{L}(\theta) = \frac{1}{N} \sum_{i=1}^N \ell[f_\theta(x_i), y_i].\]
+Then, taking the gradient using the chain rule with something like \(\frac{\partial \mathcal{L}(\theta)}{\partial \theta} = \frac{\partial \mathcal{L}(\theta)}{\partial f} \cdot \frac{\partial f}{\partial \theta}\) gives
+\[ \nabla_{\theta} \mathcal{L}(\theta) = \frac{1}{N} \sum_{i=1}^N \nabla_{\theta} f_\theta(x_i) \cdot \nabla_f \ell[f_\theta(x_i), y_i]. \]
+Then, since the gradient flow \(\frac{d \theta}{dt}\) is given by \(-\nabla_{\theta} \mathcal{L}(\theta)\), we have by the chain rule that
+\[ \frac{d f_\theta(x)}{dt} = \nabla_{\theta} f_\theta(x) \cdot \frac{d \theta}{dt} = -\frac{1}{N} \sum_{i=1}^N \underbrace{\nabla_{\theta} f_\theta(x) \cdot \nabla_{\theta} f_\theta(x_i)}_{\text{NTK!}} \cdot \nabla_f \ell[f_\theta(x_i), y_i]. \]
+</p>
+<h3>Spaces and the original formulation</h3>
+<p>
+Later literature often assumes the existence of a parameterized network \(f_{\theta}\). But Jacot et al. begin their paper by introducing a realization function \(\Phi: \Theta \to (X \to Y)\), where \(\F := \Phi(\Theta)\) is the subset of functions from \(X\) to \(Y\) that can be realized by some parameter \(\theta\) in the parameter space \(\Theta\), usually taken to be \(\R^P\). They then define the NTK as 
+\[ K_\theta(x,x') = \sum_{p=1}^P \partial_{\theta_p} \Phi (\theta)(x) \otimes \partial_{\theta_p} \Phi(\theta)(x') = \sum_{p=1}^P \langle \partial_{\theta_p} \Phi(\theta)(x), \partial_{\theta_p} \Phi(\theta)(x') \rangle_{\R^d}.\]
+</p>
+<p>
+This notation reveals the relationship between the several spaces here. For a given set of parameters \(\theta\), consider the tangent space \(\T_{\theta} \Theta\), of which an element \(\delta \theta\) is some magnitude of movement in some direction away from \(\theta\). This space is spanned by a set of basis vectors \(\{e_p = \partial_{\theta_p}\}\). 
+</p>
+<p>
+Furthermore, for an element \(f_{\theta}\) in the set of realized functions \(\F = \{\Phi(\theta): \theta \in \Theta\}\), we can also consider the tangent space \(\T_{f_{\theta}} \F\), which consists of all infinitesimal changes to the function \(f_{\theta}\). By our definition of \(\F\), these changes can be achieved by changing \(\theta\) by some infinitesimal amount \(\delta \theta\). 
+</p>
+<p>
+The NTK moves through these spaces first by considering a set of parameters \(\theta \in \Theta\), realizing them into \(\F\) via \(\Phi\), and finally bringing us into the tangent space of functions \(\T_{f_{\theta}} \F\) by applying the basis elements \(\partial_{\theta_p}\) of \(\T_{\theta} \Theta\) to \(\Phi(\theta)\).
+</p>
+<p>
+The connection between the two tangent spaces themselves is articulated by the <b>differential</b> (pushforward) of the realization map:
+\[ d_{\theta} \Phi: \T_{\theta} \Theta \to \T_{f_{\theta}} \F, \]
+which, by definition, maps \(\delta \theta \mapsto \sum_{p=1} \partial_{\theta_p} \Phi(\theta) \cdot \delta \theta_p \) [add footnote?]. Here, the core structure the NTK uses is in black, with auxiliary mappings in blue:
+</p>
+<p style="text-align: center;">
+    <img src="/Users/jamiemahowald/Documents/GitHub/j-mahowald.github.io/blog/ntk_for/vis/tikz/tikz.svg" width="300" alt="Tangent spaces">
+</p>
+<p>
+This allows us to formalize the tangent space of the function space as: 
+\[ \T_{f_\theta} \F = \left\{\delta f : \delta f(x) = \sum_{p=1}^P \partial_{\theta_p} \Phi(\theta)(x) \cdot \delta \theta_p, \delta \theta \in \T_\theta \Theta \right\}. \]
+</p>
+
+<h3>The data space</h3>
+There are two important spaces we're leaving out: the input and output spaces \(X\) and \(Y\). In one sense, \(X\) and \(Y\) have passive roles as the domain and codomain of the network \(f_{\theta}\). In another sense, \(X\) and \(Y\) are active spaces that meaningfully affect and are affected, respectively, by variations in the other spaces. This distinction shows up in the difference between \(\T_x X\), an element \(\delta x\) of which is a small change to the input point \(x\), and \(\T_{f_{\theta}} \F\), an element \(\delta f_{\theta}\) of which is a small change to the <i>entire function</i> \(f_{\theta}\), which itself induces a variational change in the output space \(Y\) via \(\delta y = \delta f_{\theta}(x)\).
+</p>
+<p>
+The pushforward from \(\F\) to \(Y\) is given by the evaluation functional at \(x\), \(\ev_x: \F to Y\), where \(\ev_x(f) = f(x)\), so that the differential from \(\T_{f_{\theta}} \F\) to \(\T_{f_{\theta}(x)} Y\) is given by \(d (\ev_x)\).
+</p>
+<p>
+Effects of variation on an input are a bit more complex, but changes in parameters essentially rely on \(\nabla_{\theta} (\ell \circ f_\theta)\).
+We then get the string:
+\[ X \to \Theta \to \F \to Y \]
+</p>
+[WIP]
+
+    <footer style="margin-top: 40px;">
+        <p style="text-align: center;">&copy; All rights reserved.</p>
+    </footer>
+</article>
+</div>
+</body>
+</html><link rel="stylesheet" type="text/css" href="https://tikzjax.com/v1/fonts.css">
+<script src="https://tikzjax.com/v1/tikzjax.js"></script>
