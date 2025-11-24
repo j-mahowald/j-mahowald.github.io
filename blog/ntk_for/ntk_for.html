@@ -26,13 +26,16 @@
         <h5 style="text-align: center;">November 23, 2025</h5>
     </header>
 
-<article>
-
 $$\DeclareMathOperator*{\out}{\text{out}}$$
 $$\DeclareMathOperator{\R}{\mathbb{R}}$$
 $$\DeclareMathOperator{\T}{\mathcal{T}}$$
 $$\DeclareMathOperator{\F}{\mathcal{F}}$$
 $$\DeclareMathOperator{\ev}{\text{ev}}$$
+
+<article>
+<p>
+The neural tangent kernel (NTK) is a fascinating object that has garnered a lot of attention in the theoretical deep learning community over the past few years. It was first introduced in the 2018 paper <a href="https://arxiv.org/abs/1806.07572">"Neural Tangent Kernel: Convergence and Generalization in Neural Networks"</a> by Arthur Jacot, Franck Gabriel, and Clément Hongler. The NTK provides a way to analyze the training dynamics of neural networks (NNs) in a certain infinite-width limit, allowing us to understand how NNs learn and generalize from data.
+</p>
 
 <p>
 Lilian Weng has an <a href="https://lilianweng.github.io/posts/2022-09-08-ntk/">excellent explanation </a> of the math of the NTK, which is probably a more useful read to most people than the original paper is. I'd highly recommend it for an in-depth rigorous introduction. Here, I want to focus on the intuition for <i>why</i> we care about the NTK in the first place, what interesting geometric properties it follows, and what useful results it could get us.
