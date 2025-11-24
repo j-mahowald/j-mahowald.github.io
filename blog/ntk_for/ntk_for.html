@@ -149,7 +149,7 @@ The neural tangent kernel itself is a deceptively simple object. Given a paramet
 \[K(x, x') = \langle \nabla_{\theta} f_{\theta}(x), \nabla_{\theta} f_{\theta}(x') \rangle.\]
 In Euclidean space, the dimension of the NTK depends on the dimensions of the parameters and the output. If the output dimension is 1 (i.e., \(f_\theta\) is a scalar-valued function), then \(\nabla_\theta f(x)\) is a vector of size \(P\), and the NTK is just a real number given by \[\sum_{p=1}^P \frac{\partial f_{\theta}(x)}{\partial \theta_p} \frac{\partial f_{\theta}(x')}{\partial \theta_p}.\] If the output dimension is \(n_{\out}>1\), then \(\nabla_\theta f_\theta\) is a matrix of shape \(P \times n_{\out}\), and the NTK is an \(n_{\out} \times n_{\out}\) matrix whose (\(i,j\)) entry is given by \[K_{ij} = \sum_{p=1}^P \frac{\partial f_{\theta_i}(x)}{\partial \theta_p} \frac{\partial f_{\theta_j}(x')}{\partial \theta_p}.\]</p>
 <p>This means that, in Euclidean space, the inner product is literally the dot product for scalar-valued functions, while for vector-valued functions, the the NTK's entries are given by the dot product of the corresponding rows of \(\nabla_\theta f_\theta(x)\) and \(\nabla_\theta f_\theta(x')^\top\):</p>
-<IMG SRC="/Users/jamiemahowald/Documents/GitHub/j-mahowald.github.io/blog/ntk_for/vis/ntk.png" WIDTH=650 ALT="NTK formula">
+<IMG SRC="blog/ntk_for/vis/ntk.png" WIDTH=650 ALT="NTK formula">
 
 <h3>Where does the NTK show up?</h3>
 <p>
@@ -182,7 +182,7 @@ The connection between the two tangent spaces themselves is articulated by the <
 which, by definition, maps \(\delta \theta \mapsto \sum_{p=1} \partial_{\theta_p} \Phi(\theta) \cdot \delta \theta_p \) [add footnote?]. Here, the core structure the NTK uses is in black, with auxiliary mappings in blue:
 </p>
 <p style="text-align: center;">
-    <img src="/Users/jamiemahowald/Documents/GitHub/j-mahowald.github.io/blog/ntk_for/vis/tikz/tikz.svg" width="300" alt="Tangent spaces">
+    <img src="blog/ntk_for/vis/tikz/tikz.svg" width="300" alt="Tangent spaces">
 </p>
 <p>
 This allows us to formalize the tangent space of the function space as: 
