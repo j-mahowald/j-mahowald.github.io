@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2024.1.5)  7 DEC 2025 12:29
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2024.1.5)  7 DEC 2025 12:21
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -281,7 +281,8 @@ File: tikzlibrarycalc.code.tex 2023-01-15 v3.1.10 (3.1.10)
 File: l3backend-pdftex.def 2023-01-16 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count284
 \l__pdf_internal_box=\box64
-) (./tikz2.aux)
+)
+No file tikz2.aux.
 \openout1 = `tikz2.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 7.
@@ -298,7 +299,7 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 7.
 LaTeX Font Info:    ... okay on input line 7.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 7.
 LaTeX Font Info:    ... okay on input line 7.
- (/usr/local/texlive/2023/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+(/usr/local/texlive/2023/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count285
 \scratchdimen=\dimen260
@@ -321,19 +322,60 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 9.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 9.
- [1
+
+
+LaTeX Warning: Command \d invalid in math mode on input line 25.
+
+/Users/jamiemahowald/Documents/GitHub/j-mahowald.github.io/blog/ntk_for/vis/tikz/tikz2.tex:25: Missing $ inserted.
+<inserted text> 
+                $
+l.25 ...t=50] node[above] {\(\d_x f_\theta\)} (TY)
+                                                  ;
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+/Users/jamiemahowald/Documents/GitHub/j-mahowald.github.io/blog/ntk_for/vis/tikz/tikz2.tex:25: Missing { inserted.
+<to be read again> 
+                   \endtemplate 
+l.25 ...t=50] node[above] {\(\d_x f_\theta\)} (TY)
+                                                  ;
+A left brace was mandatory here, so I've put one in.
+You might want to delete and/or insert some corrections
+so that I will find a matching right brace soon.
+(If you're confused by all this, try typing `I}' now.)
+
+/Users/jamiemahowald/Documents/GitHub/j-mahowald.github.io/blog/ntk_for/vis/tikz/tikz2.tex:25: Missing $ inserted.
+<inserted text> 
+                $
+l.25 ...t=50] node[above] {\(\d_x f_\theta\)} (TY)
+                                                  ;
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+/Users/jamiemahowald/Documents/GitHub/j-mahowald.github.io/blog/ntk_for/vis/tikz/tikz2.tex:25: Missing } inserted.
+<inserted text> 
+                }
+l.25 ...t=50] node[above] {\(\d_x f_\theta\)} (TY)
+                                                  ;
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+[1
 
 {/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (./tikz2.aux) ) 
 Here is how much of TeX's memory you used:
- 13368 strings out of 476025
- 289115 string characters out of 5790018
+ 13362 strings out of 476025
+ 288965 string characters out of 5790018
  1860388 words of memory out of 5000000
- 33603 multiletter control sequences out of 15000+600000
+ 33599 multiletter control sequences out of 15000+600000
  512287 words of font info for 32 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 117i,7n,118p,549b,790s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 117i,11n,118p,549b,790s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on tikz2.pdf (1 page, 48332 bytes).
+Output written on tikz2.pdf (1 page, 48169 bytes).
 PDF statistics:
  36 PDF objects out of 1000 (max. 8388607)
  22 compressed objects within 1 object stream
