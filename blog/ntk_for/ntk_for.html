@@ -259,7 +259,7 @@ I'll finish out with three instances where the NTK offers some interesting theor
 
 <p>(Much of the following is taken from <a href="https://arxiv.org/abs/2210.05577">Tsilivis and Kempe's "What Can the Neural Tangent Kernel Tell Us About Adversarial Robustness?"</a>)
 A network that is <b>adversarially robust</b> is resistant to small, carefully designed perturbations to its inputs that cause misclassification. For example, an image classifier that is adversarially robust would not change its predicted label if a small amount of noise were added to the input image. Using Tsilivis and Kempe's example:
-<img src="/Users/jamiemahowald/Documents/GitHub/j-mahowald.github.io/blog/ntk_for/vis/adversarial.png" width="650">
+<img src="vis/adversarial.png" width="650">
 Here, adversarial examples are decomposed as input perturbations of different features used in model output.
 
 Adversarial robustness is an important property for safety-critical applications like autonomous driving and medical diagnosis, where misclassifications can have serious consequences. Adversarial attacks rely particularly on understanding the features extracted by a model's first few layers, from which one can reverse-engineer attacks that look visually similar in input space while significantly perturbing the feature space. The main tension in this field is retaining features that are both robust and useful.
