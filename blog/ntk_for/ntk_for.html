@@ -37,14 +37,16 @@
     <script src="https://tikzjax.com/v1/tikzjax.js"></script>
 </head>
 
-<body class="page-blog">
-<div class="content-wrapper">
-    <header>
-        <p style="text-align: center;"><a href="blog.html">← Back to Blogs</a></p>
-        <h3 style="text-align: center;">What is the neural tangent kernel for?</h3>
-        <h5 style="text-align: center;">November 23, 2025</h5>
-    </header>
+<body>
+<table style="width:100%;max-width:800px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+<tr style="padding:0px">
+<td style="padding:20px">
 
+  <p style="text-align:center;"><a href="../../blog.html">← Back to Blog</a></p>
+  <h2 style="text-align:center;">What is the neural tangent kernel for?</h2>
+  <p style="text-align:center;font-size:small;color:#888;">November 23, 2025</p>
+
+  <hr>
 
 <div style="text-align: center;">
     <img src="vis/kernel.png" width="400" alt="Kernel illustration">
@@ -258,9 +260,9 @@ I'll finish out with three instances where the NTK offers some interesting theor
 <h3>Adversarial robustness</h3>
 
 <p>(Much of the following is taken from <a href="https://arxiv.org/abs/2210.05577">Tsilivis and Kempe's "What Can the Neural Tangent Kernel Tell Us About Adversarial Robustness?"</a>)
-A network that is <b>adversarially robust</b> is resistant to small, carefully designed perturbations to its inputs that cause misclassification. For example, an image classifier that is adversarially robust would not change its predicted label if a small amount of noise were added to the input image. Using Tsilivis and Kempe's example:
+A network that is <b>adversarially robust</b> is resistant to small, carefully designed perturbations to its inputs that cause misclassification. For example, an image classifier that is adversarially robust would not change its predicted label if a small amount of noise were added to the input image. Using Tsilivis and Kempe's example:<p>
 <img src="vis/adversarial.png" width="650">
-Here, adversarial examples are decomposed as input perturbations of different features used in model output.
+<p>Here, adversarial examples are decomposed as input perturbations of different features used in model output.</p>
 
 Adversarial robustness is an important property for safety-critical applications like autonomous driving and medical diagnosis, where misclassifications can have serious consequences. Adversarial attacks rely particularly on understanding the features extracted by a model's first few layers, from which one can reverse-engineer attacks that look visually similar in input space while significantly perturbing the feature space. The main tension in this field is retaining features that are both robust and useful.
 </p>
