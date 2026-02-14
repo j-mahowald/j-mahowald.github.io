@@ -43,6 +43,8 @@
       background: radial-gradient(ellipse 80% 70% at 50% 50%, var(--bg-mid) 0%, var(--bg) 100%);
       overflow: hidden;
       transition: opacity 0.7s ease;
+      flex-direction: column;
+      gap: 12px;
     }
 
     .vday-heading {
@@ -95,18 +97,15 @@
     }
 
     #yes-btn {
-      background: var(--rose);
-      color: #fff;
-      box-shadow: 0 0 28px var(--rose-glow), 0 4px 16px rgba(0,0,0,0.4);
-    }
-    #yes-btn:hover {
-      box-shadow: 0 0 56px var(--rose-glow), 0 0 100px rgba(217,95,118,0.25), 0 4px 16px rgba(0,0,0,0.4);
+      background: linear-gradient(rgba(217,95,118,0.45), rgba(217,95,118,0.45)),
+                  url('val_photos/shelly_happy.jpg') center/cover;
+      /* remove the old background: var(--rose) line */
     }
 
     #no-btn {
-      background: var(--no-fill);
-      color: var(--no-text);
-      box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+      background: linear-gradient(rgba(42,53,64,0.55), rgba(42,53,64,0.55)),
+                  url('val_photos/bell_pepper.png') center/cover;
+      /* remove the old background: var(--no-fill) line */
     }
 
     /* ── SCENE CONNECT 4 ─────────────────────────── */
@@ -203,11 +202,16 @@
     }
 
     .cell.p1 {
-      background: var(--red-piece);
+      background:
+        linear-gradient(rgba(230,60,82,0.45), rgba(230,60,82,0.45)),
+        url('val_photos/shelly_neural.png') center/cover;
       box-shadow: 0 0 14px rgba(230,60,82,0.7), inset 0 -3px 6px rgba(0,0,0,0.25);
     }
+
     .cell.p2 {
-      background: var(--yel-piece);
+      background:
+        linear-gradient(rgba(245,200,66,0.45), rgba(245,200,66,0.45)),
+        url('val_photos/biggie.png') center/cover;
       box-shadow: 0 0 14px rgba(245,200,66,0.55), inset 0 -3px 6px rgba(0,0,0,0.2);
     }
     .cell.win-flash {
@@ -275,15 +279,17 @@
 
 <!-- ── SCENE 1: Valentine ─── -->
 <div id="scene-valentine">
+  <h1 class="vday-heading">❗KATIE ANDERSON❗</h1>
   <h1 class="vday-heading">Will you be my Valentine?</h1>
+  <br>
   <div id="yes-btn" class="circle">Yes</div>
   <div id="no-btn"  class="circle">No</div>
 </div>
 
 <!-- ── SCENE 2: Connect 4 ─── -->
 <div id="scene-connect4">
-  <h2 class="c4-heading">Let's play Connect 4 ♥</h2>
-  <div id="status-msg">Your turn — you're red!</div>
+  <h2 class="c4-heading">Let's Connect (4) (hehehe)</h2>
+  <div id="status-msg">Your turn — you're Shell!!!</div>
   <div id="board-wrap">
     <div id="col-buttons"></div>
     <div id="c4-grid"></div>
@@ -580,17 +586,17 @@ function humanDrop(col) {
     gameOver = true;
     renderGrid(wc);
     renderColBtns();
-    setMsg("You win! 🎉 Happy Valentine's Day! 💕");
+    setMsg("You win! You smart sexy beast I love you");
     return;
   }
   if (isDraw(board)) {
     gameOver = true; render();
-    setMsg("It's a draw! 💕");
+    setMsg("It's a draw! 😲");
     return;
   }
 
   aiThinking = true;
-  setMsg("Thinking... 🤔");
+  setMsg("Thinking...");
   renderColBtns(); // disable buttons immediately
 
   setTimeout(() => {
@@ -608,10 +614,10 @@ function humanDrop(col) {
     }
     if (isDraw(board)) {
       gameOver = true; render();
-      setMsg("It's a draw! 💕");
+      setMsg("It's a draw! We are so perfect.");
       return;
     }
-    setMsg("Your turn ♥");
+    setMsg("Your turn beautiful ♥");
   }, 380);
 }
 
