@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Valentine's Day 💕</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:        #130810;
+      --bg-mid:    #2b0e22;
+      --rose:      #d95f76;
+      --rose-glow: rgba(217, 95, 118, 0.55);
+      --gold:      #c9a96e;
+      --cream:     #f0e0cc;
+      --no-fill:   #2a3540;
+      --no-text:   #6a8090;
+      --board-bg:  #163080;
+      --hole-bg:   #0c1e55;
+      --red-piece: #e63c52;
+      --yel-piece: #f5c842;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--bg);
+      color: var(--cream);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    /* ── SCENE VALENTINE ─────────────────────────── */
+    #scene-valentine {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse 80% 70% at 50% 50%, var(--bg-mid) 0%, var(--bg) 100%);
+      overflow: hidden;
+      transition: opacity 0.7s ease;
+    }
+
+    .vday-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(2rem, 5.5vw, 3.8rem);
+      color: var(--cream);
+      text-align: center;
+      letter-spacing: 0.03em;
+      text-shadow: 0 0 60px var(--rose-glow), 0 2px 4px rgba(0,0,0,0.6);
+      pointer-events: none;
+      user-select: none;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Floating hearts background */
+    .heart {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0;
+      animation: floatUp linear infinite;
+      z-index: 1;
+    }
+    @keyframes floatUp {
+      0%   { opacity: 0;    transform: translateY(0)      scale(0.6) rotate(0deg); }
+      10%  { opacity: 0.35; }
+      80%  { opacity: 0.15; }
+      100% { opacity: 0;    transform: translateY(-100vh) scale(1.1) rotate(20deg); }
+    }
+
+    /* Circles */
+    .circle {
+      position: fixed;
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Lato', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      user-select: none;
+      z-index: 30;
+      transition: box-shadow 0.3s;
+    }
+
+    #yes-btn {
+      background: var(--rose);
+      color: #fff;
+      box-shadow: 0 0 28px var(--rose-glow), 0 4px 16px rgba(0,0,0,0.4);
+    }
+    #yes-btn:hover {
+      box-shadow: 0 0 56px var(--rose-glow), 0 0 100px rgba(217,95,118,0.25), 0 4px 16px rgba(0,0,0,0.4);
+    }
+
+    #no-btn {
+      background: var(--no-fill);
+      color: var(--no-text);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+    }
+
+    /* ── SCENE CONNECT 4 ─────────────────────────── */
+    #scene-connect4 {
+      position: fixed;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      background: radial-gradient(ellipse 80% 70% at 50% 50%, var(--bg-mid) 0%, var(--bg) 100%);
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    #scene-connect4.visible {
+      display: flex;
+    }
+    #scene-connect4.shown {
+      opacity: 1;
+    }
+
+    .c4-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(1.4rem, 3.2vw, 2.2rem);
+      color: var(--cream);
+      text-shadow: 0 0 40px var(--rose-glow);
+      text-align: center;
+      letter-spacing: 0.03em;
+    }
+
+    #status-msg {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--gold);
+      letter-spacing: 0.06em;
+      min-height: 1.4rem;
+      text-align: center;
+      text-shadow: 0 0 20px rgba(201,169,110,0.4);
+    }
+
+    /* Board */
+    #board-wrap {
+      background: var(--board-bg);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow:
+        0 12px 50px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(255,255,255,0.06),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    #col-buttons {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .col-btn {
+      background: none;
+      border: none;
+      height: 22px;
+      cursor: pointer;
+      color: rgba(255,255,255,0.25);
+      font-size: 0.9rem;
+      transition: color 0.2s, transform 0.15s;
+      border-radius: 4px;
+    }
+    .col-btn:hover:not(:disabled) {
+      color: rgba(255,255,255,0.75);
+      transform: translateY(-2px);
+    }
+    .col-btn:disabled {
+      cursor: default;
+      color: transparent;
+    }
+
+    #c4-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .cell {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--hole-bg);
+      box-shadow: inset 0 3px 10px rgba(0,0,0,0.7);
+      transition: background 0.18s, box-shadow 0.18s;
+    }
+
+    .cell.p1 {
+      background: var(--red-piece);
+      box-shadow: 0 0 14px rgba(230,60,82,0.7), inset 0 -3px 6px rgba(0,0,0,0.25);
+    }
+    .cell.p2 {
+      background: var(--yel-piece);
+      box-shadow: 0 0 14px rgba(245,200,66,0.55), inset 0 -3px 6px rgba(0,0,0,0.2);
+    }
+    .cell.win-flash {
+      animation: winPulse 0.55s ease-in-out infinite alternate;
+    }
+    @keyframes winPulse {
+      from { box-shadow: 0 0 8px rgba(255,255,255,0.3); }
+      to   { box-shadow: 0 0 28px rgba(255,255,255,0.9), 0 0 50px rgba(255,255,255,0.3); }
+    }
+
+    /* Reset button */
+    #reset-btn {
+      background: transparent;
+      border: 1px solid var(--rose);
+      color: var(--rose);
+      font-family: 'Lato', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 10px 32px;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: background 0.25s, color 0.25s, box-shadow 0.25s;
+    }
+    #reset-btn:hover {
+      background: var(--rose);
+      color: #fff;
+      box-shadow: 0 0 30px var(--rose-glow);
+    }
+
+    /* Legend dots */
+    .legend {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      font-size: 0.82rem;
+      font-weight: 300;
+      color: rgba(240,224,204,0.6);
+      letter-spacing: 0.05em;
+    }
+    .legend span {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot.red { background: var(--red-piece); box-shadow: 0 0 6px rgba(230,60,82,0.6); }
+    .dot.yel { background: var(--yel-piece); box-shadow: 0 0 6px rgba(245,200,66,0.5); }
+
+    /* Responsive */
+    @media (max-width: 540px) {
+      .cell { width: 40px; height: 40px; }
+      #c4-grid, #col-buttons { gap: 6px; }
+      #board-wrap { padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── SCENE 1: Valentine ─── -->
+<div id="scene-valentine">
+  <h1 class="vday-heading">Will you be my Valentine?</h1>
+  <div id="yes-btn" class="circle">Yes</div>
+  <div id="no-btn"  class="circle">No</div>
+</div>
+
+<!-- ── SCENE 2: Connect 4 ─── -->
+<div id="scene-connect4">
+  <h2 class="c4-heading">Let's play Connect 4 ♥</h2>
+  <div id="status-msg">Your turn — you're red!</div>
+  <div id="board-wrap">
+    <div id="col-buttons"></div>
+    <div id="c4-grid"></div>
+  </div>
+  <div class="legend">
+    <span><em class="dot red"></em> You</span>
+    <span><em class="dot yel"></em> Me</span>
+  </div>
+  <button id="reset-btn">Play Again</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  SCENE 1 — Valentine circles
+// ═══════════════════════════════════════════════
+
+const sceneV  = document.getElementById('scene-valentine');
+const sceneC4 = document.getElementById('scene-connect4');
+const yesBtn  = document.getElementById('yes-btn');
+const noBtn   = document.getElementById('no-btn');
+
+const RADIUS = 48; // half circle size
+
+// Spawn floating hearts
+const HEART_CHARS = ['❤️','💕','💗','💖','🌹','✿','♡'];
+for (let i = 0; i < 18; i++) {
+  const h = document.createElement('div');
+  h.classList.add('heart');
+  h.textContent = HEART_CHARS[Math.floor(Math.random() * HEART_CHARS.length)];
+  h.style.cssText = [
+    `left: ${Math.random() * 100}%`,
+    `bottom: ${-3 + Math.random() * -5}rem`,
+    `font-size: ${0.7 + Math.random() * 1.4}rem`,
+    `animation-duration: ${5 + Math.random() * 6}s`,
+    `animation-delay: ${Math.random() * 7}s`,
+  ].join(';');
+  sceneV.appendChild(h);
+}
+
+// Circle positions (centres)
+let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+let yesP  = { x: window.innerWidth  * 0.36, y: window.innerHeight * 0.66 };
+let noP   = { x: window.innerWidth  * 0.64, y: window.innerHeight * 0.66 };
+let valentineActive = true;
+
+document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+function len(dx, dy) { return Math.sqrt(dx*dx + dy*dy) || 0.0001; }
+
+function tickCircles() {
+  if (valentineActive) {
+    // YES: gently lerp toward mouse
+    yesP.x += (mouse.x - yesP.x) * 0.028;
+    yesP.y += (mouse.y - yesP.y) * 0.028;
+
+    // NO: flee from mouse when nearby
+    const dx = noP.x - mouse.x;
+    const dy = noP.y - mouse.y;
+    const d  = len(dx, dy);
+    const fleeR = 240;
+    if (d < fleeR) {
+      const speed = 14 * Math.pow(1 - d / fleeR, 1.4);
+      noP.x += (dx / d) * speed;
+      noP.y += (dy / d) * speed;
+    }
+
+    const m = RADIUS + 8;
+    const W = window.innerWidth, H = window.innerHeight;
+    yesP.x = clamp(yesP.x, m, W - m); yesP.y = clamp(yesP.y, m, H - m);
+    noP.x  = clamp(noP.x,  m, W - m); noP.y  = clamp(noP.y,  m, H - m);
+
+    yesBtn.style.left = (yesP.x - RADIUS) + 'px';
+    yesBtn.style.top  = (yesP.y - RADIUS) + 'px';
+    noBtn.style.left  = (noP.x  - RADIUS) + 'px';
+    noBtn.style.top   = (noP.y  - RADIUS) + 'px';
+  }
+  requestAnimationFrame(tickCircles);
+}
+
+// Init circle positions
+yesBtn.style.left = (yesP.x - RADIUS) + 'px';
+yesBtn.style.top  = (yesP.y - RADIUS) + 'px';
+noBtn.style.left  = (noP.x  - RADIUS) + 'px';
+noBtn.style.top   = (noP.y  - RADIUS) + 'px';
+requestAnimationFrame(tickCircles);
+
+// YES clicked → transition to Connect 4
+yesBtn.addEventListener('click', () => {
+  valentineActive = false;
+  sceneV.style.opacity = '0';
+  setTimeout(() => {
+    sceneV.style.display = 'none';
+    sceneC4.classList.add('visible');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => sceneC4.classList.add('shown'));
+    });
+    initC4();
+  }, 700);
+});
+
+
+// ═══════════════════════════════════════════════
+//  SCENE 2 — Connect 4
+// ═══════════════════════════════════════════════
+
+const ROWS = 6, COLS = 7;
+const HUMAN = 1, AI = 2, EMPTY = 0;
+
+let board, gameOver, aiThinking;
+
+function initC4() {
+  board      = Array.from({ length: ROWS }, () => Array(COLS).fill(EMPTY));
+  gameOver   = false;
+  aiThinking = false;
+  render();
+  setMsg("Your turn — drop a red piece ♥");
+}
+
+function setMsg(txt) {
+  document.getElementById('status-msg').textContent = txt;
+}
+
+function render() {
+  renderColBtns();
+  renderGrid();
+}
+
+function renderColBtns() {
+  const wrap = document.getElementById('col-buttons');
+  wrap.innerHTML = '';
+  for (let c = 0; c < COLS; c++) {
+    const btn = document.createElement('button');
+    btn.className = 'col-btn';
+    btn.textContent = '▼';
+    btn.dataset.col = c;
+    btn.disabled = gameOver || aiThinking || board[0][c] !== EMPTY;
+    btn.addEventListener('click', () => humanDrop(c));
+    wrap.appendChild(btn);
+  }
+}
+
+function renderGrid(winCells) {
+  const grid = document.getElementById('c4-grid');
+  grid.innerHTML = '';
+  const winSet = new Set((winCells || []).map(({r,c}) => `${r},${c}`));
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      if (board[r][c] === HUMAN) cell.classList.add('p1');
+      if (board[r][c] === AI)    cell.classList.add('p2');
+      if (winSet.has(`${r},${c}`)) cell.classList.add('win-flash');
+      grid.appendChild(cell);
+    }
+  }
+}
+
+// ── Game logic ─────────────────────────────────
+
+function drop(b, col, player) {
+  for (let r = ROWS - 1; r >= 0; r--) {
+    if (b[r][col] === EMPTY) { b[r][col] = player; return r; }
+  }
+  return -1;
+}
+
+function undrop(b, col) {
+  for (let r = 0; r < ROWS; r++) {
+    if (b[r][col] !== EMPTY) { b[r][col] = EMPTY; return; }
+  }
+}
+
+function validCols(b) {
+  return [0,1,2,3,4,5,6].filter(c => b[0][c] === EMPTY);
+}
+
+function isDraw(b) { return b[0].every(c => c !== EMPTY); }
+
+function winCells(b) {
+  const dirs = [[0,1],[1,0],[1,1],[1,-1]];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const p = b[r][c];
+      if (!p) continue;
+      for (const [dr, dc] of dirs) {
+        const cells = [{r,c}];
+        for (let k = 1; k < 4; k++) {
+          const nr = r + dr*k, nc = c + dc*k;
+          if (nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS || b[nr][nc] !== p) break;
+          cells.push({r:nr, c:nc});
+        }
+        if (cells.length === 4) return cells;
+      }
+    }
+  }
+  return null;
+}
+
+// ── Minimax AI ─────────────────────────────────
+
+function scoreWindow(w, p) {
+  const opp = p === AI ? HUMAN : AI;
+  const me   = w.filter(x => x === p).length;
+  const them = w.filter(x => x === opp).length;
+  const emp  = w.filter(x => x === EMPTY).length;
+  if (me === 4)                  return  100000;
+  if (them === 4)                return -100000;
+  if (me === 3 && emp === 1)     return  8;
+  if (me === 2 && emp === 2)     return  3;
+  if (them === 3 && emp === 1)   return -90;
+  return 0;
+}
+
+function evalBoard(b) {
+  let s = 0;
+  // Centre bonus
+  const mid = Math.floor(COLS / 2);
+  for (let r = 0; r < ROWS; r++) if (b[r][mid] === AI) s += 3;
+
+  // Horizontal
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c <= COLS-4; c++)
+      s += scoreWindow([b[r][c],b[r][c+1],b[r][c+2],b[r][c+3]], AI);
+
+  // Vertical
+  for (let c = 0; c < COLS; c++)
+    for (let r = 0; r <= ROWS-4; r++)
+      s += scoreWindow([b[r][c],b[r+1][c],b[r+2][c],b[r+3][c]], AI);
+
+  // Diagonals
+  for (let r = 0; r <= ROWS-4; r++) {
+    for (let c = 0; c <= COLS-4; c++)
+      s += scoreWindow([b[r][c],b[r+1][c+1],b[r+2][c+2],b[r+3][c+3]], AI);
+    for (let c = 3; c < COLS; c++)
+      s += scoreWindow([b[r][c],b[r+1][c-1],b[r+2][c-2],b[r+3][c-3]], AI);
+  }
+  return s;
+}
+
+function minimax(b, depth, alpha, beta, maxing) {
+  const wc = winCells(b);
+  if (wc) {
+    const p = b[wc[0].r][wc[0].c];
+    return p === AI ? 100000 + depth : -100000 - depth;
+  }
+  if (depth === 0 || isDraw(b)) return evalBoard(b);
+  const cols = validCols(b);
+
+  if (maxing) {
+    let best = -Infinity;
+    for (const c of cols) {
+      drop(b, c, AI);
+      best = Math.max(best, minimax(b, depth-1, alpha, beta, false));
+      undrop(b, c);
+      alpha = Math.max(alpha, best);
+      if (alpha >= beta) break;
+    }
+    return best;
+  } else {
+    let best = Infinity;
+    for (const c of cols) {
+      drop(b, c, HUMAN);
+      best = Math.min(best, minimax(b, depth-1, alpha, beta, true));
+      undrop(b, c);
+      beta = Math.min(beta, best);
+      if (alpha >= beta) break;
+    }
+    return best;
+  }
+}
+
+function getBestCol(b) {
+  const cols = validCols(b);
+  let bestScore = -Infinity, bestCol = cols[Math.floor(cols.length / 2)];
+  for (const c of cols) {
+    drop(b, c, AI);
+    const s = minimax(b, 5, -Infinity, Infinity, false);
+    undrop(b, c);
+    if (s > bestScore) { bestScore = s; bestCol = c; }
+  }
+  return bestCol;
+}
+
+// ── Turn handling ──────────────────────────────
+
+function humanDrop(col) {
+  if (gameOver || aiThinking) return;
+  drop(board, col, HUMAN);
+  render();
+
+  const wc = winCells(board);
+  if (wc) {
+    gameOver = true;
+    renderGrid(wc);
+    renderColBtns();
+    setMsg("You win! 🎉 Happy Valentine's Day! 💕");
+    return;
+  }
+  if (isDraw(board)) {
+    gameOver = true; render();
+    setMsg("It's a draw! 💕");
+    return;
+  }
+
+  aiThinking = true;
+  setMsg("Thinking... 🤔");
+  renderColBtns(); // disable buttons immediately
+
+  setTimeout(() => {
+    drop(board, getBestCol(board), AI);
+    aiThinking = false;
+    render();
+
+    const wc2 = winCells(board);
+    if (wc2) {
+      gameOver = true;
+      renderGrid(wc2);
+      renderColBtns();
+      setMsg("I win! Best 2 out of 3? 😘");
+      return;
+    }
+    if (isDraw(board)) {
+      gameOver = true; render();
+      setMsg("It's a draw! 💕");
+      return;
+    }
+    setMsg("Your turn ♥");
+  }, 380);
+}
+
+document.getElementById('reset-btn').addEventListener('click', initC4);
+</script>
+
+</body>
+</html>
